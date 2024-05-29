@@ -1,20 +1,16 @@
-/* eslint-disable prettier/prettier */
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import { StatusBar } from 'expo-status-bar';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import React from 'react';
 
-import Inicio from '~/screens/Inicio';
+import Inicio from '../src/screens/Inicio';
 
+const Stack = createNativeStackNavigator();
 
-const Stack = createStackNavigator();
-
-export default function AppRoutes() {
+function AppRoutes() {
   return (
-    <NavigationContainer>
-      <StatusBar backgroundColor="#1d1d2e" style="light" translucent={false} />
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Inicio" component={Inicio}/>
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
+    <Stack.Navigator>
+      <Stack.Screen name="Inicio" component={Inicio} />
+    </Stack.Navigator>
+  )
 }
+
+export default AppRoutes;

@@ -1,33 +1,60 @@
 /* eslint-disable prettier/prettier */
 
-import React from "react"
+import React, { useState } from "react"
 import { View, Text, Image , StyleSheet, TouchableOpacity} from "react-native"
 import { TextInput } from "react-native-gesture-handler"
-import { useNavigation } from "@react-navigation/native"
 
-export default function Login(){
-    const navigation = useNavigation();
+import { useAuth } from "~/contexts/AuthContext";
 
-    const handleOnPress = ()=> {
-        navigation.navigate('Inicio');
-    }
+
+
+
+
+export const LoginScreen: React.FC = () => {
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const { loginRequest, saveAccessToken, setIsAuthenticated } = useAuth();
+  
+
+  
+    const handleLogin = async () => {
+      try {
+        const credentials = { username, password };
+        const token = await loginRequest(credentials);
+        saveAccessToken(token.access_token);
+        setIsAuthenticated(true);
+        setErrorMessage(null);
+
+      } catch (error) {
+        console.error('Error:', error);
+        setErrorMessage('Login failed. Please check your credentials.');
+      }
+    };
+
+
   return (
     <View style={styles.container}>
         <Image
         style={styles.logo}
         source={require('../../../assets/estacao.png')}
+      
         />
     <View style={styles.containerInput}>
         <TextInput
         style={styles.input}
         placeholder="Digite seu e-mail"
+        value={username}
+        onChangeText={setUsername}
         />
         <TextInput
         style={styles.input}
         placeholder="Digite sua senha"
         secureTextEntry
+        value={password}
+        onChangeText={setPassword}
         />
-       <TouchableOpacity style={styles.button} onPress={handleOnPress}>
+       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Entrar</Text>
        </TouchableOpacity>
     </View>

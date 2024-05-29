@@ -3,11 +3,12 @@ import React from 'react';
 import { ActivityIndicator, View } from 'react-native';
 
 import AppRoutes from './app.routes';
-import AuthLogin from './auth.login';
+import AuthRoutes from './auth.routes';
+import { useAuth } from '~/contexts/AuthContext';
 
 function Routes() {
-  const isAuthenticated = false;
-  const loading = false;
+  const { isAuthenticated, loading } = useAuth();
+
 
   if(loading){
     return(
@@ -23,7 +24,7 @@ function Routes() {
     )
   }
 
-  return(isAuthenticated ? <AppRoutes /> : <AuthLogin />)
+  return(isAuthenticated ? <AppRoutes /> : <AuthRoutes />)
 }
 
 export default Routes;
