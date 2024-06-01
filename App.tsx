@@ -11,7 +11,7 @@ export default function App() {
     <GestureHandlerRootView>
       <NavigationContainer>
         <AuthProvider>
-        <StatusBar backgroundColor="#1d1d2e" barStyle="light-content" translucent={false} />
+        <StatusBar backgroundColor='#0b1f34' barStyle="light-content" translucent={false} />
         <Routes />
         </AuthProvider>
       </NavigationContainer>

@@ -16,7 +16,7 @@ export default function Welcome({ navigation }) {
 
       <Animatable.View delay={800} animation="fadeInUp" style={styles.containerForm}>
         <Text style={styles.title}>
-          Um Projeto da Segunda Igreja Batista de Pendotiba para transformar vidas!
+          Um Projeto da Segunda Igreja Batista de Pendotiba para transformação vidas!
         </Text>
         <Text style={styles.text}>Faça o login para começar</Text>
 
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
 
   button: {
     position: 'absolute',
-    backgroundColor: '#38a69d',
+    backgroundColor: '#ed7947',
     borderRadius: 50,
     paddingVertical: 8,
     width: '68%',
