@@ -1,28 +1,64 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, ImageBackground } from 'react-native';
+import { Link, NavigationProp, useNavigation } from '@react-navigation/native';
+import navigation from 'navigation';
+import { RootStackParamList } from 'navigation/navigationTypes';
+import React, { useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Image,
+  ImageBackground,
+  Vibration,
+} from 'react-native';
 import { Button, Card } from 'react-native-paper';
 
+import * as cursosService from '../../service/cursosService';
+
+import { cursosDTO } from '~/models/cursos';
+
 const Cursos = () => {
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+
+  const [cursosDTO, setCursosDTO] = useState<cursosDTO[]>([]);
+  const fotoCoordenador = 'https://i.postimg.cc/zGdVdHpN/gilson.png';
+  useEffect(() => {
+    cursosService
+      .findAll()
+      .then((response) => {
+        console.log('Dados recebidos:', response.data);
+        setCursosDTO(response.data);
+      })
+      .catch((error) => {
+        console.error('Erro ao buscar dados:', error);
+      });
+  }, []);
+
   return (
     <ScrollView style={styles.containerTela}>
-      <Card style={styles.container} >
-        <ImageBackground source={require('../../../assets/bateria.jpg')}  style={styles.imagemFundo}/>
-        <View style={styles.containerImagem}>
-          <Image
-            style={styles.imagem}
-            source={{ uri: 'https://i.postimg.cc/zGdVdHpN/gilson.png' }}
-          />
-          <Text style={styles.curso}>
-            Bateria e Percussão{'\n'}
-            <Text style={styles.professor}>Professor: Alan Santos</Text>
-          </Text>
-        </View>
-        <View>
-          <Button style={styles.button}>
-            <Text style={styles.buttonText}>Entrar</Text>
-          </Button>
-        </View>
-      </Card>
+      {cursosDTO.map((curso, index) => (
+        <Card key={index} style={styles.container}>
+          <ImageBackground source={{ uri: curso.foto_fundo }} style={styles.imagemFundo} />
+          <View style={styles.containerImagem}>
+            <Image style={styles.imagem} source={{ uri: curso.foto_lider }} />
+            <View style={styles.textContainer}>
+              <Text style={styles.curso}>
+                {curso.nome}
+                {'\n'}
+                <Text style={styles.professor}>{curso.lider}</Text>
+              </Text>
+            </View>
+          </View>
+          <View>
+            <Button
+              mode="contained"
+              style={styles.button}
+              onPress={() => navigation.navigate('DetalheCurso', { id: curso.id })}>
+              <Text style={styles.buttonText}>Entrar</Text>
+            </Button>
+          </View>
+        </Card>
+      ))}
     </ScrollView>
   );
 };
@@ -35,6 +71,8 @@ const styles = StyleSheet.create({
   container: {
     marginVertical: 20,
     marginHorizontal: 30,
+    overflow: 'hidden',
+    zIndex: 1,
   },
   containerImagem: {
     marginVertical: 20,
@@ -45,31 +83,46 @@ const styles = StyleSheet.create({
     width: 110,
     height: 110,
     borderRadius: 60,
-    zIndex: 1
-
-
+    zIndex: 1,
+    borderStyle: 'solid',
+    borderWidth: 2,
+    borderColor: '#0b1f34',
   },
   imagemFundo: {
-    width: 350,
-    height: 200,
-    resizeMode: 'cover', // para cobrir toda a área do Card com a imagem
-    justifyContent: 'center', // centraliza os elementos no Card
-    alignItems: 'center', // centraliza os elementos no Card
-   
+    width: '100%',
+    height: 150,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   curso: {
     fontWeight: 'bold',
-    marginLeft: 20,
-    marginTop: 20,
-    fontSize: 14,
-    color: '#0b1f34',
+    fontSize: 18,
+    color: 'white',
+    backgroundColor: '#0b1f34',
+    paddingHorizontal: 30,
+    paddingVertical: 10,
+    borderRadius: 30,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    elevation: 5,
+    marginHorizontal: '10%',
+    justifyContent: 'center',
+    alignSelf: 'center',
+  textAlign:'center'
+  },
+  textContainer: {
+    marginLeft: 12,
+
   },
   button: {
-    backgroundColor: '#0b1f34',
-    width:200,
-   marginLeft:100,
- marginBottom:10
+    backgroundColor: '#ed7947',
+    width: 100,
 
+    position: 'absolute',
+    bottom: 10,
+    right: 45,
   },
 
   buttonText: {
@@ -77,7 +130,9 @@ const styles = StyleSheet.create({
   },
 
   professor: {
-    justifyContent: 'flex-end',
+    fontSize: 12,
+    justifyContent: 'center',
+    alignSelf: 'center',
   },
 });
 

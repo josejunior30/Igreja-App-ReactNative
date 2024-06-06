@@ -5,8 +5,13 @@ import Inicio from '../src/screens/Inicio';
 
 import Header from '~/screens/header';
 import Cursos from '~/screens/cursos';
+import DetalheCurso from '~/screens/cursos/detalhe-curso';
+import { RootStackParamList } from './navigationTypes';
 
-const Stack = createNativeStackNavigator();
+
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
+
 
 function AppRoutes() {
   return (
@@ -16,6 +21,7 @@ function AppRoutes() {
       }}>
       <Stack.Screen name="Inicio" component={Inicio} />
       <Stack.Screen name="Cursos" component={Cursos} />
+      <Stack.Screen name="DetalheCurso" component={DetalheCurso} />
     </Stack.Navigator>
   );
 }
