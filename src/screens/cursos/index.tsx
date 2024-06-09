@@ -1,5 +1,5 @@
-import { Link, NavigationProp, useNavigation } from '@react-navigation/native';
-import navigation from 'navigation';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+
 import { RootStackParamList } from 'navigation/navigationTypes';
 import React, { useEffect, useState } from 'react';
 import {

@@ -1,14 +1,14 @@
-import DateTimePicker from '@react-native-community/datetimepicker';
 import { useNavigation, useRoute, RouteProp, NavigationProp } from '@react-navigation/native';
 import { RootStackParamList } from 'navigation/navigationTypes';
 import React, { useState, useEffect } from 'react';
 import { ScrollView, View, Text, Button, StyleSheet, Switch } from 'react-native';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 
-import * as cursosService from '../../service/cursosService';
-import * as presencaService from '../../service/presencaService';
+import * as cursosService from '../../../service/cursosService';
+import * as presencaService from '../../../service/presencaService';
 
 import { cursosDTO } from '~/models/cursos';
-import { PresencaDTO, alunos } from '~/models/presenca';
+import { PresencaDTO, Alunos } from '~/models/presenca';
 
 type DetalheCursoRouteProp = RouteProp<RootStackParamList, 'Presença'>;
 
@@ -17,9 +17,10 @@ const Presença = () => {
   const { id } = route.params;
   const [curso, setCurso] = useState<cursosDTO>();
   const [loading, setLoading] = useState(true);
-  const [listaDeAlunos, setListaDeAlunos] = useState<alunos[]>([]);
+  const [listaDeAlunos, setListaDeAlunos] = useState<Alunos[]>([]);
   const [presencas, setPresencas] = useState<PresencaDTO[]>([]);
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   const loadCurso = (id: number) => {
@@ -93,6 +94,19 @@ const Presença = () => {
     });
   };
 
+  const showDatePicker = () => {
+    setDatePickerVisibility(true);
+  };
+
+  const hideDatePicker = () => {
+    setDatePickerVisibility(false);
+  };
+
+  const handleConfirm = (date: Date) => {
+    setSelectedDate(date.toISOString().split('T')[0]);
+    hideDatePicker();
+  };
+
   if (loading) {
     return <Text>Carregando...</Text>;
   }
@@ -101,6 +115,14 @@ const Presença = () => {
     <ScrollView style={styles.container}>
       <View>
         <Text>Escolha uma Data</Text>
+        <Button title="Escolher Data" onPress={showDatePicker} />
+        <DateTimePickerModal
+          isVisible={isDatePickerVisible}
+          mode="date"
+          onConfirm={handleConfirm}
+          onCancel={hideDatePicker}
+        />
+        <Text>Data Selecionada: {selectedDate}</Text>
       </View>
       {curso && (
         <View style={styles.table}>
@@ -138,7 +160,7 @@ const Presença = () => {
 const styles = StyleSheet.create({
   container: {
     padding: 16,
-    backgroundColor:'white'
+    backgroundColor: 'white',
   },
   table: {
     marginTop: 16,
@@ -164,16 +186,12 @@ const styles = StyleSheet.create({
     padding: 8,
     paddingHorizontal: 8,
     width: 210,
-     
-  
   },
   cellBox: {
     flex: 1,
     paddingHorizontal: 9,
     alignItems: 'center',
     fontSize: 12,
-    
- 
     padding: 8,
   },
   headerText: {
@@ -183,12 +201,11 @@ const styles = StyleSheet.create({
     flex: 3,
     paddingHorizontal: 8,
     fontSize: 14,
-    fontWeight:'bold',
-    color:'#ed7947'
+    fontWeight: 'bold',
+    color: '#ed7947',
   },
   box: {
     width: 90,
-   
   },
 });
 

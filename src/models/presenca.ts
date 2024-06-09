@@ -1,20 +1,17 @@
-export type PresencaDTO ={
-
+export type PresencaDTO = {
     id: number;
     data: Date;
     chamadaAluno: number;
-    alunos: alunos;
-    projetosChamada: projetosChamada;
-
+    alunos: Alunos; 
+    projetosChamada: ProjetosChamada; 
 }
 
-export type alunos ={
+export type Alunos = {
     id: number;
     nome: string;
-   
 }
-export type projetosChamada = {
+
+export type ProjetosChamada = {
     id: number;
     nome: string;
-
 }

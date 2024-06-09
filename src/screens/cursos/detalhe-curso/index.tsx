@@ -54,7 +54,13 @@ const DetalheCurso = () => {
           onPress={() => navigation.navigate('Presença', { id: cursosDTO.id })}>
           <Text style={styles.buttonText}>Presença</Text>
         </Button>
-        <Button style={styles.button}>
+        <Button
+          style={styles.button}
+          onPress={() => navigation.navigate('PresençaExibir')}>
+          
+          <Text style={styles.buttonText}>PresençaExibir</Text>
+        </Button>
+        <Button style={styles.button} onPress={() => navigation.navigate('Relatorio')}>
           <Text style={styles.buttonText}>Relatório</Text>
         </Button>
       </View>
