@@ -5,5 +5,6 @@ export type RootStackParamList = {
   Presença: { id: number };
   PresençaExibir: undefined;
   Relatorio: undefined;
+  AddRelatorio: undefined;
   DetalhesRelatorio: { id: number };
 };

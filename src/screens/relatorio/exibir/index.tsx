@@ -91,7 +91,9 @@ const Relatorio = () => {
       <Text>Data Escolhida: {selectedDate.toISOString().split('T')[0]}</Text>
 
       <Text>Escolha o projeto:</Text>
-      <Picker selectedValue={projeto} onValueChange={(itemValue) => handleProjetoChange(itemValue)}>
+      <Picker
+        selectedValue={projeto}
+        onValueChange={(itemValue: any) => handleProjetoChange(itemValue)}>
         <Picker.Item label="Selecione um projeto" value={null} />
         <Picker.Item label="Artesanato" value={1} />
         <Picker.Item label="Jiu-Jitsu" value={2} />
@@ -110,12 +112,11 @@ const Relatorio = () => {
           data={relatorio}
           renderItem={({ item }) => (
             <View>
-              <TouchableOpacity  onPress={() => navigation.navigate('DetalhesRelatorio', { id: relatorio.id })}>
+              <TouchableOpacity
+                onPress={() => navigation.navigate('DetalhesRelatorio', { id: item.id })}>
                 <Text>Projeto: {item.projetosRelatorio.nome}</Text>
               </TouchableOpacity>
-              <TouchableOpacity>
-                <Text>Professor: {item.projetosRelatorio.lider}</Text>
-              </TouchableOpacity>
+              <Text>Professor: {item.projetosRelatorio.lider}</Text>
               {/* Adicione aqui os outros campos do relatório */}
             </View>
           )}
