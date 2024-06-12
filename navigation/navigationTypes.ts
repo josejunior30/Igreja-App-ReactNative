@@ -7,4 +7,5 @@ export type RootStackParamList = {
   Relatorio: undefined;
   AddRelatorio: undefined;
   DetalhesRelatorio: { id: number };
+  MenuSecretaria: undefined;
 };

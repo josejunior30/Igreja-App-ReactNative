@@ -1,3 +1,4 @@
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import axios from 'axios';
@@ -12,6 +13,7 @@ const AddRelatorio = () => {
   const [projetos, setProjetos] = useState<projetosRelatorio[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const navigation = useNavigation<NavigationProp<any>>();
 
   const [relatorioDTO, setRelatorioDTO] = useState<RelatorioDTO>({
@@ -65,7 +67,6 @@ const AddRelatorio = () => {
       }));
     }
   };
-  
 
   const handleSubmit = async () => {
     try {
@@ -95,21 +96,38 @@ const AddRelatorio = () => {
     }
   };
 
+  const showDatePickerHandler = () => {
+    setShowDatePicker(true);
+  };
+
+  const onDateChange = (event: any, selectedDate: Date | undefined) => {
+    setShowDatePicker(false);
+    if (selectedDate) {
+      handleChange('data', selectedDate);
+    }
+  };
+
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.label}>Data:</Text>
-      <TextInput
-        style={styles.input}
-        value={relatorioDTO.data.toISOString().split('T')[0]}
-        onChangeText={(value) => handleChange('data', new Date(value))}
-      />
+      <Button  title="Escolher Data" onPress={showDatePickerHandler}  />
+      {showDatePicker && (
+        <DateTimePicker
+          value={relatorioDTO.data}
+          mode="date"
+          display="default"
+          onChange={onDateChange}
+        />
+      )}
       <Text style={styles.label}>A aula ocorreu normalmente?</Text>
       <TextInput
         style={styles.input}
         value={relatorioDTO['A aula ocorreu normalmente?']}
         onChangeText={(value) => handleChange('A aula ocorreu normalmente?', value)}
       />
-      <Text style={styles.label}>Problemas apresentados por alunos:</Text>
+      <Text style={styles.pergunta}>
+        'Algum(a) aluno(a) apresentou problemas de comportamento, aprendizagem, assistência social
+        ou espiritual? Qual?'
+      </Text>
       <TextInput
         style={styles.input}
         value={
@@ -124,34 +142,37 @@ const AddRelatorio = () => {
           )
         }
       />
-      <Text style={styles.label}>Dificuldade com o material das aulas?</Text>
+      <Text style={styles.pergunta}>Houve dificuldade com o material das aulas?</Text>
       <TextInput
         style={styles.input}
         value={relatorioDTO['Houve dificuldade com o material das aulas?']}
         onChangeText={(value) => handleChange('Houve dificuldade com o material das aulas?', value)}
       />
-      <Text style={styles.label}>Sugestões para a equipe:</Text>
+      <Text style={styles.pergunta}>Sugestões para a equipe:</Text>
       <TextInput
         style={styles.input}
         value={relatorioDTO['Alguma sugestão para a equipe de trabalho?']}
         onChangeText={(value) => handleChange('Alguma sugestão para a equipe de trabalho?', value)}
       />
-      <Text style={styles.label}>Observações ou sugestões adicionais:</Text>
+      <Text style={styles.pergunta}>Observações ou sugestões adicionais?</Text>
       <TextInput
         style={styles.input}
         value={relatorioDTO['Mais alguma observação ou sugestão?']}
         onChangeText={(value) => handleChange('Mais alguma observação ou sugestão?', value)}
       />
-      <Text style={styles.label}>Projeto:</Text>
-      <Picker
-        selectedValue={relatorioDTO.projetosRelatorio.id}
-        onValueChange={(value) => handleChange('projetosRelatorio', value)}
-        style={styles.picker}>
-        {projetos.map((projeto) => (
-          <Picker.Item key={projeto.id} label={projeto.nome} value={projeto.id} />
-        ))}
-      </Picker>
-      <Button title="Adicionar Relatório" onPress={handleSubmit} />
+      <View style={styles.containerProjeto}>
+        <Text style={styles.label}>Selcione o Curso:</Text>
+        <Picker
+          selectedValue={relatorioDTO.projetosRelatorio.id}
+          onValueChange={(value) => handleChange('projetosRelatorio', value)}
+          style={styles.picker}>
+          {projetos.map((projeto) => (
+            <Picker.Item key={projeto.id} label={projeto.nome} value={projeto.id} />
+          ))}
+        </Picker>
+      </View>
+
+      <Button title="Enviar Relatório" onPress={handleSubmit} />
     </ScrollView>
   );
 };
@@ -164,19 +185,28 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 16,
-    marginBottom: 8,
+    fontWeight: 'bold',
+    marginTop: 30,
   },
+  pergunta: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+
   input: {
     height: 40,
     borderColor: '#ccc',
     borderWidth: 1,
-    marginBottom: 16,
+    marginBottom: 25,
     paddingHorizontal: 8,
   },
   picker: {
     height: 50,
     width: '100%',
-    marginBottom: 16,
+    
+  },
+  containerProjeto: {
+    flexDirection: 'row',
   },
 });
 

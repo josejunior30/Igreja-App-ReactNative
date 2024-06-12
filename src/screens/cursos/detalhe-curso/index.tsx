@@ -1,8 +1,8 @@
-import { Ionicons, FontAwesome, Entypo } from '@expo/vector-icons';
+import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import { NavigationProp, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from 'navigation/navigationTypes';
 import { useEffect, useState } from 'react';
-import { ScrollView, Text, View, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { ScrollView, Text, View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Button } from 'react-native-paper';
 
 import * as cursosService from '../../../service/cursosService';
@@ -17,6 +17,7 @@ const DetalheCurso = () => {
   const [cursosDTO, setCursosDTO] = useState<cursosDTO>();
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+
   const loadCursosDTO = (id: number) => {
     cursosService
       .findById(id)
@@ -54,17 +55,12 @@ const DetalheCurso = () => {
           onPress={() => navigation.navigate('Presença', { id: cursosDTO.id })}>
           <Text style={styles.buttonText}>Presença</Text>
         </Button>
-        <Button style={styles.button} onPress={() => navigation.navigate('PresençaExibir')}>
-          <Text style={styles.buttonText}>PresençaExibir</Text>
-        </Button>
-        <Button style={styles.button} onPress={() => navigation.navigate('Relatorio')}>
+
+        <Button style={styles.button} onPress={() => navigation.navigate('AddRelatorio')}>
           <Text style={styles.buttonText}>Relatório</Text>
         </Button>
-        <Button style={styles.button} onPress={() => navigation.navigate('AddRelatorio')}>
-          <Text style={styles.buttonText}>Preencher Relatório</Text>
-        </Button>
       </View>
-      <TouchableOpacity style={styles.containerVoltar}>
+      <TouchableOpacity style={styles.containerVoltar} onPress={() => navigation.goBack()}>
         <Ionicons name="arrow-back-circle" size={30} color="white" />
         <Text style={styles.voltar}>Voltar</Text>
       </TouchableOpacity>
@@ -91,7 +87,7 @@ const DetalheCurso = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0b869b',
+    backgroundColor: '#0b1f34',
   },
   containerVoltar: {
     marginLeft: 30,

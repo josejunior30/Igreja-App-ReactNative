@@ -19,7 +19,7 @@ import { cursosDTO } from '~/models/cursos';
 
 const Cursos = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-
+  
   const [cursosDTO, setCursosDTO] = useState<cursosDTO[]>([]);
   const fotoCoordenador = 'https://i.postimg.cc/zGdVdHpN/gilson.png';
   useEffect(() => {

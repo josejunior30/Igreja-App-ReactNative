@@ -1,8 +1,10 @@
+import { Ionicons } from '@expo/vector-icons';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { useNavigation, useRoute, RouteProp, NavigationProp } from '@react-navigation/native';
 import { RootStackParamList } from 'navigation/navigationTypes';
 import React, { useState, useEffect } from 'react';
-import { ScrollView, View, Text, Button, StyleSheet, Switch } from 'react-native';
-import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import { ScrollView, View, Text, StyleSheet, Switch, TouchableOpacity } from 'react-native';
+import { Button } from 'react-native-paper';
 
 import * as cursosService from '../../../service/cursosService';
 import * as presencaService from '../../../service/presencaService';
@@ -102,9 +104,11 @@ const Presença = () => {
     setDatePickerVisibility(false);
   };
 
-  const handleConfirm = (date: Date) => {
-    setSelectedDate(date.toISOString().split('T')[0]);
-    hideDatePicker();
+  const handleConfirm = (event: any, date: Date | undefined) => {
+    setDatePickerVisibility(false);
+    if (date) {
+      setSelectedDate(date.toISOString().split('T')[0]);
+    }
   };
 
   if (loading) {
@@ -113,16 +117,23 @@ const Presença = () => {
 
   return (
     <ScrollView style={styles.container}>
+      <TouchableOpacity style={styles.containerVoltar} onPress={() => navigation.goBack()}>
+        <Ionicons name="arrow-back-circle" size={30} color="white" />
+        <Text style={styles.voltar}>Voltar</Text>
+      </TouchableOpacity>
       <View>
-        <Text>Escolha uma Data</Text>
-        <Button title="Escolher Data" onPress={showDatePicker} />
-        <DateTimePickerModal
-          isVisible={isDatePickerVisible}
-          mode="date"
-          onConfirm={handleConfirm}
-          onCancel={hideDatePicker}
-        />
-        <Text>Data Selecionada: {selectedDate}</Text>
+        <Button style={styles.btnData} onPress={showDatePicker}>
+          <Text style={styles.btnDataText}>Escolha a data</Text>
+        </Button>
+        {isDatePickerVisible && (
+          <DateTimePicker
+            value={new Date(selectedDate)}
+            mode="date"
+            display="default"
+            onChange={handleConfirm}
+          />
+        )}
+        <Text style={styles.labelDate}>{selectedDate.toString().split('T')[0]}</Text>
       </View>
       {curso && (
         <View style={styles.table}>
@@ -152,7 +163,9 @@ const Presença = () => {
           ))}
         </View>
       )}
-      <Button title="Enviar Presenças" onPress={enviarListaDePresenca} />
+      <Button style={styles.btnEnviar} onPress={enviarListaDePresenca}>
+        <Text style={styles.btnEnviarText}>Enviar</Text>
+      </Button>
     </ScrollView>
   );
 };
@@ -160,7 +173,7 @@ const Presença = () => {
 const styles = StyleSheet.create({
   container: {
     padding: 16,
-    backgroundColor: 'white',
+    backgroundColor: '#0b1f34',
   },
   table: {
     marginTop: 16,
@@ -173,6 +186,56 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
     backgroundColor: '#00D4FF',
     borderBottomColor: '#ccc',
+  },
+  voltar: {
+    fontSize: 16,
+    marginLeft: 10,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  containerVoltar: {
+    marginLeft: 20,
+    flexDirection: 'row',
+    marginBottom: 10,
+    marginTop: 40,
+  },
+  btnData: {
+    backgroundColor: '#ed7947',
+    marginHorizontal: 90,
+    marginTop: 30,
+    paddingVertical: 10,
+    borderRadius: 20,
+  },
+  btnDataText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 18,
+  },
+  btnEnviar : {
+    backgroundColor: '#00D4FF',
+    marginHorizontal: 90,
+    marginTop: 30,
+    paddingVertical: 10,
+    borderRadius: 20,
+    marginBottom:30
+  },
+  btnEnviarText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 18,
+  },
+  labelDate: {
+    textAlign: 'center',
+    fontSize: 18,
+    marginTop: 30,
+    marginBottom: 10,
+    fontWeight: 'bold',
+    color: 'white',
+    borderWidth: 1,
+    borderColor: '#00D4FF',
+    marginHorizontal: 90,
+    borderRadius: 20,
+    paddingVertical: 10,
   },
   row: {
     flexDirection: 'row',
@@ -202,7 +265,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#ed7947',
+    color: 'white',
   },
   box: {
     width: 90,

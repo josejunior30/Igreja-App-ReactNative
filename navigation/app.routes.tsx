@@ -9,9 +9,10 @@ import Presença from '~/screens/chamada/inserir';
 import Cursos from '~/screens/cursos';
 import DetalheCurso from '~/screens/cursos/detalhe-curso';
 import Header from '~/screens/header';
-import Relatorio from '~/screens/relatorio/exibir';
 import DetalhesRelatorio from '~/screens/relatorio/detalhes';
+import Relatorio from '~/screens/relatorio/exibir';
 import AddRelatorio from '~/screens/relatorio/inserir';
+import MenuSecretaria from '~/screens/secretaria/menu';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -29,6 +30,7 @@ function AppRoutes() {
       <Stack.Screen name="Relatorio" component={Relatorio} />
       <Stack.Screen name="DetalhesRelatorio" component={DetalhesRelatorio} />
       <Stack.Screen name="AddRelatorio" component={AddRelatorio} />
+      <Stack.Screen name="MenuSecretaria" component={MenuSecretaria} />
     </Stack.Navigator>
   );
 }
