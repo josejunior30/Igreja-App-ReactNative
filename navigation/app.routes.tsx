@@ -13,6 +13,8 @@ import DetalhesRelatorio from '~/screens/relatorio/detalhes';
 import Relatorio from '~/screens/relatorio/exibir';
 import AddRelatorio from '~/screens/relatorio/inserir';
 import MenuSecretaria from '~/screens/secretaria';
+import Alunos from '~/screens/alunos/exibir';
+import DetalhesAlunos from '~/screens/alunos/detalhe';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -31,6 +33,8 @@ function AppRoutes() {
       <Stack.Screen name="DetalhesRelatorio" component={DetalhesRelatorio} />
       <Stack.Screen name="AddRelatorio" component={AddRelatorio} />
       <Stack.Screen name="MenuSecretaria" component={MenuSecretaria} />
+      <Stack.Screen name="Alunos" component={Alunos} />
+      <Stack.Screen name="DetalhesAlunos" component={DetalhesAlunos} />
     </Stack.Navigator>
   );
 }

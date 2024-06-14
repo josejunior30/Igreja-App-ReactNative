@@ -8,4 +8,6 @@ export type RootStackParamList = {
   AddRelatorio: undefined;
   DetalhesRelatorio: { id: number };
   MenuSecretaria: undefined;
+  Alunos: undefined;
+  DetalhesAlunos:{ id: number };
 };
