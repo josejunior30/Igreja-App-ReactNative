@@ -12,7 +12,7 @@ import Header from '~/screens/header';
 import DetalhesRelatorio from '~/screens/relatorio/detalhes';
 import Relatorio from '~/screens/relatorio/exibir';
 import AddRelatorio from '~/screens/relatorio/inserir';
-import MenuSecretaria from '~/screens/secretaria/menu';
+import MenuSecretaria from '~/screens/secretaria';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 

@@ -1,7 +1,16 @@
+import { Ionicons } from '@expo/vector-icons';
 import { NavigationProp, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from 'navigation/navigationTypes';
 import React, { useEffect, useState } from 'react';
-import { View, Text, ActivityIndicator, StyleSheet, ScrollView, Image } from 'react-native';
+import {
+  View,
+  Text,
+  ActivityIndicator,
+  StyleSheet,
+  ScrollView,
+  Image,
+  TouchableOpacity,
+} from 'react-native';
 
 import { RelatorioDTO } from '~/models/relatorio';
 import * as relatorioService from '~/service/relatorioService';
@@ -51,36 +60,44 @@ const DetalhesRelatorio = () => {
 
   return (
     <ScrollView style={styles.container}>
-      <Image source={{ uri: estacao }} style={styles.image} />
-      <Text style={styles.title}>Detalhes do Relatório</Text>
-      <Text style={styles.label}>ID: {relatorioDTO.id}</Text>
-      <Text style={styles.label}>Data: {new Date(relatorioDTO.data).toLocaleDateString()}</Text>
-      <Text style={styles.label}>
-        A aula ocorreu normalmente?: {relatorioDTO['A aula ocorreu normalmente?']}
-      </Text>
-      <Text style={styles.label}>
-        Problemas apresentados por alunos:{' '}
-        {
-          relatorioDTO[
-            'Algum(a) aluno(a) apresentou problemas de comportamento, aprendizagem, assistência social ou espiritual? Qual?'
-          ]
-        }
-      </Text>
-      <Text style={styles.label}>
-        Dificuldade com o material das aulas?:{' '}
-        {relatorioDTO['Houve dificuldade com o material das aulas?']}
-      </Text>
-      <Text style={styles.label}>
-        Sugestões para a equipe: {relatorioDTO['Alguma sugestão para a equipe de trabalho?']}
-      </Text>
-      <Text style={styles.label}>
-        Observações ou sugestões adicionais: {relatorioDTO['Mais alguma observação ou sugestão?']}
-      </Text>
+      <TouchableOpacity style={styles.containerVoltar} onPress={() => navigation.goBack()}>
+        <Ionicons name="arrow-back-circle" size={30} color="white" />
+        <Text style={styles.voltar}>Voltar</Text>
+      </TouchableOpacity>
+      <Text style={styles.title}>Relatório</Text>
       <View style={styles.projetoContainer}>
-        <Text style={styles.label}>Projeto:</Text>
-        <Text style={styles.label}>ID: {relatorioDTO.projetosRelatorio.id}</Text>
-        <Text style={styles.label}>Nome: {relatorioDTO.projetosRelatorio.nome}</Text>
-        <Text style={styles.label}>Líder: {relatorioDTO.projetosRelatorio.lider}</Text>
+        <View  style={styles.cabeçalho}> 
+          <Text style={styles.label}>Data: {new Date(relatorioDTO.data).toLocaleDateString()}</Text>
+          <Text style={styles.label}>Curso: {relatorioDTO.projetosRelatorio.nome}</Text>
+          <Text style={styles.label}>Professor: {relatorioDTO.projetosRelatorio.lider}</Text>
+        </View>
+        <Text style={styles.pergunta}>A aula ocorreu normalmente?</Text>
+        <Text style={styles.resposta}>{relatorioDTO['A aula ocorreu normalmente?']}</Text>
+        <Text style={styles.pergunta}>
+          Algum(a) aluno(a) apresentou problemas de comportamento, aprendizagem, assistência social
+          ou espiritual? Qual?'{' '}
+        </Text>
+        <Text style={styles.resposta}>
+          {
+            relatorioDTO[
+              'Algum(a) aluno(a) apresentou problemas de comportamento, aprendizagem, assistência social ou espiritual? Qual?'
+            ]
+          }
+        </Text>
+        <Text style={styles.pergunta}>Houve dificuldade com o material das aulas?</Text>
+        <Text style={styles.resposta}>
+          {relatorioDTO['Houve dificuldade com o material das aulas?']}
+        </Text>
+
+        <Text style={styles.pergunta}>Alguma sugestão para a equipe de trabalho?</Text>
+        <Text style={styles.resposta}>
+          {relatorioDTO['Alguma sugestão para a equipe de trabalho?']}
+        </Text>
+
+        <Text style={styles.pergunta}>Mais alguma observação ou sugestão?</Text>
+        <Text style={styles.resposta}> {relatorioDTO['Mais alguma observação ou sugestão?']}</Text>
+
+        <Image source={{ uri: estacao }} style={styles.image} />
       </View>
     </ScrollView>
   );
@@ -90,22 +107,56 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#0b1f34',
+  },
+  cabeçalho:{
+
+marginBottom:30
   },
   image: {
-    width: '100%',
-    height: 150,
+    width: '50%',
+    height: 70,
     resizeMode: 'contain',
     marginBottom: 16,
+    justifyContent:'center',
+    alignItems:'center',
+    alignSelf:'center'
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 16,
+    color:'white'
   },
   label: {
     fontSize: 16,
     marginBottom: 8,
+  },
+  pergunta: {
+    fontSize: 16,
+    marginBottom: 8,
+    fontWeight: 'bold',
+    backgroundColor:'#0b1f34',
+    padding:10,
+    color:'white'
+  
+  },
+  resposta: {
+    fontSize: 16,
+    marginBottom: 8,
+    paddingBottom:20
+  },
+  voltar: {
+    fontSize: 16,
+    marginLeft: 10,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  containerVoltar: {
+    marginLeft: 30,
+    flexDirection: 'row',
+    marginBottom: 10,
+    marginTop: 30,
   },
   projetoContainer: {
     marginTop: 16,
@@ -114,6 +165,7 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
     borderRadius: 8,
     backgroundColor: '#f9f9f9',
+    marginBottom:20
   },
   errorContainer: {
     flex: 1,
