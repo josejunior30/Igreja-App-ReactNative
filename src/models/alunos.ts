@@ -2,12 +2,11 @@ export type alunosDTO = {
   id: number;
   nome: string;
   dataNascimento: Date;
-  idade: number;
   rg: string;
   responsavel: string;
   cpfResponsavel: string;
   telefone: string;
-  url: string;
+
   rua: string;
   cep: string;
   numero: string;
@@ -30,6 +29,7 @@ export type alunoDTO = {
   responsavel: string;
   cpfResponsavel: string;
   telefone: string;
+  idade:number,
   url: string;
   rua: string;
   cep: string;

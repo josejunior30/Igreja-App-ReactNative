@@ -4,6 +4,10 @@ import React from 'react';
 import { RootStackParamList } from './navigationTypes';
 import Inicio from '../src/screens/Inicio';
 
+import DetalhesAlunos from '~/screens/alunos/detalhe';
+import EditarAlunos from '~/screens/alunos/editar';
+import Alunos from '~/screens/alunos/exibir';
+import AddAlunos from '~/screens/alunos/inserir';
 import PresençaExibir from '~/screens/chamada/exibir';
 import Presença from '~/screens/chamada/inserir';
 import Cursos from '~/screens/cursos';
@@ -13,8 +17,6 @@ import DetalhesRelatorio from '~/screens/relatorio/detalhes';
 import Relatorio from '~/screens/relatorio/exibir';
 import AddRelatorio from '~/screens/relatorio/inserir';
 import MenuSecretaria from '~/screens/secretaria';
-import Alunos from '~/screens/alunos/exibir';
-import DetalhesAlunos from '~/screens/alunos/detalhe';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -35,6 +37,8 @@ function AppRoutes() {
       <Stack.Screen name="MenuSecretaria" component={MenuSecretaria} />
       <Stack.Screen name="Alunos" component={Alunos} />
       <Stack.Screen name="DetalhesAlunos" component={DetalhesAlunos} />
+      <Stack.Screen name="AddAlunos" component={AddAlunos} />
+      <Stack.Screen name="EditarAlunos" component={EditarAlunos} />
     </Stack.Navigator>
   );
 }

@@ -11,6 +11,7 @@ import {
   ActivityIndicator,
   Image,
 } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 
 import { alunoDTO } from '~/models/alunos';
 import * as alunosService from '~/service/alunosService';
@@ -82,14 +83,14 @@ const DetalhesAlunos = () => {
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <TouchableOpacity style={styles.containerVoltar} onPress={() => navigation.goBack()}>
         <Ionicons name="arrow-back-circle" size={30} color="white" />
         <Text style={styles.voltar}>Voltar</Text>
       </TouchableOpacity>
       <View style={styles.detailsContainer}>
         {alunosDTO.url && <Image source={{ uri: alunosDTO.url }} style={styles.image} />}
-        <Text style={styles.label}>
+        <Text style={styles.labelNome}>
           Nome: <Text style={styles.value}>{alunosDTO.nome}</Text>
         </Text>
         <Text style={styles.label}>
@@ -103,22 +104,54 @@ const DetalhesAlunos = () => {
         <Text style={styles.label}>
           Identidade: <Text style={styles.value}>{alunosDTO.rg}</Text>
         </Text>
-
+        <Text style={styles.label}>
+          Idade: <Text style={styles.value}>{alunosDTO.idade}</Text>
+        </Text>
         <Text style={styles.label}>
           Data de Nascimento:{' '}
           <Text style={styles.value}>
             {new Date(alunosDTO.dataNascimento).toLocaleDateString('pt-BR')}
           </Text>
         </Text>
+        <Text style={styles.labelNome}>
+          Curso: <Text style={styles.value}>{alunosDTO.projetos.nome}</Text>
+        </Text>
       </View>
+
+      <View style={styles.detailsEndereço}>
+        <Text style={styles.labelNome}>Endereço</Text>
+        <Text style={styles.labelEndereço}>
+          Rua: <Text style={styles.value}>{alunosDTO.rua}</Text>
+        </Text>
+        <Text style={styles.labelEndereço}>
+          Bairro:{' '}
+          <Text style={styles.value}>
+            {alunosDTO.bairro} nº: {alunosDTO.numero}
+          </Text>
+        </Text>
+
+        <Text style={styles.labelEndereço}>
+          Cidade: <Text style={styles.value}>{alunosDTO.cidade}</Text>
+        </Text>
+        <Text style={styles.labelEndereço}>
+          Complemento: <Text style={styles.value}>{alunosDTO.complemento}</Text>
+        </Text>
+        <Text style={styles.labelEndereço}>
+          Cep: <Text style={styles.value}>{alunosDTO.cep}</Text>
+        </Text>
+      </View>
+
       <View style={styles.btnContainer}>
         <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteClick}>
           <Text style={styles.deleteButtonText}>Deletar</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.editarButton} onPress={handleDeleteClick}>
+        <TouchableOpacity
+          style={styles.editarButton}
+          onPress={() => navigation.navigate('EditarAlunos', { id: alunosDTO.id })}>
           <Text style={styles.deleteButtonText}>Editar</Text>
         </TouchableOpacity>
       </View>
+
       <Modal
         animationType="slide"
         transparent
@@ -138,7 +171,7 @@ const DetalhesAlunos = () => {
           </View>
         </View>
       </Modal>
-    </View>
+    </ScrollView>
   );
 };
 
@@ -161,41 +194,55 @@ const styles = StyleSheet.create({
   },
   detailsContainer: {
     marginVertical: 20,
-  marginHorizontal:35,
+    marginHorizontal: 30,
+    borderWidth: 4,
+    borderColor: '#0b869b',
 
     padding: 20,
     backgroundColor: 'white',
-    borderRadius: 8,
+    borderRadius: 20,
     textAlign: 'center',
   },
   image: {
-    width: 200,
-    height: 200,
-    borderRadius: 8,
+    width: 150,
+    height: 150,
+    borderRadius: 20,
     justifyContent: 'center',
     alignSelf: 'center',
     marginBottom: 30,
+    borderWidth: 6,
+    borderColor: '#0b869b',
   },
-  btnContainer:{
-    flexDirection:'row',
-    justifyContent:'center',
-    alignSelf:'center'
+  btnContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignSelf: 'center',
   },
-  editarButton:{
-    backgroundColor:'#00D4FF',
+  editarButton: {
+    backgroundColor: '#00D4FF',
     padding: 10,
     borderRadius: 8,
     alignItems: 'center',
-    marginRight:10,
-    marginLeft:30,
-    fontSize:18,
-    width:80
-
+    marginRight: 10,
+    marginLeft: 30,
+    fontSize: 18,
+    width: 80,
+    marginBottom: 30,
   },
   label: {
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 15,
+  },
+  labelNome: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 15,
+    backgroundColor: '#0b869b',
+    padding: 10,
+    borderRadius: 10,
+    color: 'white',
+    textAlign: 'center',
   },
 
   value: {
@@ -208,13 +255,28 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 8,
     alignItems: 'center',
-    fontSize:18,
-    width:80
-
+    fontSize: 18,
+    width: 80,
+    marginBottom: 30,
   },
   deleteButtonText: {
     color: 'white',
     fontWeight: 'bold',
+  },
+  detailsEndereço: {
+    marginVertical: 5,
+    marginHorizontal: 30,
+    borderWidth: 4,
+    borderColor: '#0b869b',
+    padding: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    textAlign: 'center',
+  },
+  labelEndereço: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 15,
   },
   modalContainer: {
     flex: 1,

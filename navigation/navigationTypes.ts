@@ -9,5 +9,7 @@ export type RootStackParamList = {
   DetalhesRelatorio: { id: number };
   MenuSecretaria: undefined;
   Alunos: undefined;
-  DetalhesAlunos:{ id: number };
+  DetalhesAlunos: { id: number };
+  AddAlunos: undefined;
+  EditarAlunos: { id: number };
 };

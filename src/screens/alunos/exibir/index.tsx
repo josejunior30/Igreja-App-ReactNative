@@ -48,10 +48,13 @@ const Alunos = () => {
           value={searchTerm}
           onChangeText={setSearchTerm}
         />
-        <Button style={styles.btn} onPress={handleSearch}>
+        <Button style={styles.btnPesquisa} onPress={handleSearch}>
           <Text style={styles.btnText}>Pesquisar</Text>
         </Button>
       </View>
+      <Button style={styles.btn} onPress={() => navigation.navigate('AddAlunos')}>
+        <Text style={styles.btnText}>Inserir</Text>
+      </Button>
       <View style={styles.resultsContainer}>
         {alunosDTO.map((aluno, index) => (
           <View key={aluno.id} style={styles.alunoContainer}>
@@ -96,6 +99,7 @@ const styles = StyleSheet.create({
   },
   resultsContainer: {
     marginTop: 16,
+    marginBottom:40
   },
   alunoContainer: {
     padding: 16,
@@ -124,6 +128,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   btn: {
+    backgroundColor: '#00D4FF',
+    width:100
+  },
+  btnPesquisa: {
     backgroundColor: '#ed7947',
   },
   btnText: {

@@ -22,3 +22,7 @@ export function deleteAluno(id: number) {
 export function findByNome(nome: string) {
   return axios.get(`${BASE_URL}/alunos/search?nome=${nome}`);
 }
+
+export function updateAluno(arg0: number, alunoEdit: alunosDTO) {
+    throw new Error('Function not implemented.');
+}
