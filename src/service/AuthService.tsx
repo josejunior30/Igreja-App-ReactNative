@@ -1,7 +1,8 @@
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import QueryString from 'qs';
-
 import { CLIENT_ID, CLIENT_SECRET } from '../contexts/system';
+import { CredentialsDTO } from '../models/auth';
+import { requestBackend } from '../models/request';
 import {
   getAccessToken,
   saveAccessToken,
@@ -10,9 +11,6 @@ import {
   isAuthenticated,
   hasAnyRoles,
 } from '../service/authHelper';
-
-import { CredentialsDTO } from '../models/auth';
-import { requestBackend } from '../models/request';
 
 import { TokenResponse } from '~/models/token';
 

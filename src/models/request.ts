@@ -2,33 +2,41 @@ import axios, { AxiosRequestConfig } from 'axios';
 import { BASE_URL } from '../contexts/system';
 import { getAccessToken } from '../service/authHelper';
 
-export function requestBackend(config: AxiosRequestConfig) {
-  const headers = config.withCredentials
-    ? {
-        ...config.headers,
-        Authorization: 'Bearer ' + getAccessToken(),
+// Função para configurar o header com o token de acesso
+const setupRequestInterceptor = async () => {
+  axios.interceptors.request.use(
+    async (config) => {
+      const accessToken = await getAccessToken(); // Obter token de acesso de forma assíncrona
+      if (accessToken) {
+        config.headers.Authorization = `Bearer ${accessToken}`;
       }
-    : config.headers;
-  return axios({ ...config, baseURL: BASE_URL, headers });
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
+    }
+  );
+};
+
+// Configurar o interceptor assim que o módulo for carregado
+setupRequestInterceptor();
+
+// Função para realizar a requisição ao backend
+export function requestBackend(config: AxiosRequestConfig) {
+  return axios({ ...config, baseURL: BASE_URL });
 }
 
-axios.interceptors.request.use(
-  function (config) {
-    return config;
-  },
-  function (error) {
-    return Promise.reject(error);
-  }
-);
-
+// Interceptores globais de erro
 axios.interceptors.response.use(
   function (response) {
     return response;
   },
   function (error) {
     if (error.response.status === 401) {
-      console.log('deu erro');
+      console.log('Erro 401: Não autorizado');
+      // Tratar aqui de acordo com a lógica da sua aplicação, como redirecionar para a tela de login
     }
     return Promise.reject(error);
   }
 );
+

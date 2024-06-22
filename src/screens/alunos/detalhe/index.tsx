@@ -29,14 +29,13 @@ const DetalhesAlunos = () => {
 
   const loadAlunosDTO = (id: number) => {
     alunosService
-      .findById(id) // Converte id para número
+      .findById(id)
       .then((response) => {
         console.log('Detalhes do Aluno:', response.data);
         setAlunosDTO(response.data);
       })
       .catch((error) => {
         console.error('Erro ao buscar detalhes do aluno:', error);
-        // Trate o estado de erro (por exemplo, exiba uma mensagem de erro)
       })
       .finally(() => {
         setLoading(false);
@@ -81,6 +80,25 @@ const DetalhesAlunos = () => {
       </View>
     );
   }
+  // Função para formatar a data no formato esperado
+  const formatarDataNascimento = (dataNascimento: string | Date | number[]) => {
+    if (typeof dataNascimento === 'string') {
+      // Se for uma string, assumimos que está no formato "YYYY-MM-DD"
+      const [ano, mes, dia] = dataNascimento.split('-');
+      return `${dia}/${mes}/${ano}`;
+    } else if (Array.isArray(dataNascimento) && dataNascimento.length === 3) {
+      // Se for um array no formato [ano, mes, dia]
+      const [ano, mes, dia] = dataNascimento;
+      return `${dia}/${mes}/${ano}`;
+    } else if (dataNascimento instanceof Date && !isNaN(dataNascimento.getTime())) {
+      // Se for um objeto Date válido
+      const dia = dataNascimento.getDate();
+      const mes = dataNascimento.getMonth() + 1; // mês é indexado a partir de 0
+      const ano = dataNascimento.getFullYear();
+      return `${dia}/${mes}/${ano}`;
+    }
+    return 'Data inválida';
+  };
 
   return (
     <ScrollView style={styles.container}>
@@ -110,7 +128,9 @@ const DetalhesAlunos = () => {
         <Text style={styles.label}>
           Data de Nascimento:{' '}
           <Text style={styles.value}>
-            {new Date(alunosDTO.dataNascimento).toLocaleDateString('pt-BR')}
+            {alunosDTO.dataNascimento
+              ? formatarDataNascimento(alunosDTO.dataNascimento)
+              : 'Data inválida'}
           </Text>
         </Text>
         <Text style={styles.labelNome}>
@@ -118,25 +138,25 @@ const DetalhesAlunos = () => {
         </Text>
       </View>
 
-      <View style={styles.detailsEndereço}>
+      <View style={styles.detailsEndereco}>
         <Text style={styles.labelNome}>Endereço</Text>
-        <Text style={styles.labelEndereço}>
+        <Text style={styles.labelEndereco}>
           Rua: <Text style={styles.value}>{alunosDTO.rua}</Text>
         </Text>
-        <Text style={styles.labelEndereço}>
+        <Text style={styles.labelEndereco}>
           Bairro:{' '}
           <Text style={styles.value}>
             {alunosDTO.bairro} nº: {alunosDTO.numero}
           </Text>
         </Text>
 
-        <Text style={styles.labelEndereço}>
+        <Text style={styles.labelEndereco}>
           Cidade: <Text style={styles.value}>{alunosDTO.cidade}</Text>
         </Text>
-        <Text style={styles.labelEndereço}>
+        <Text style={styles.labelEndereco}>
           Complemento: <Text style={styles.value}>{alunosDTO.complemento}</Text>
         </Text>
-        <Text style={styles.labelEndereço}>
+        <Text style={styles.labelEndereco}>
           Cep: <Text style={styles.value}>{alunosDTO.cep}</Text>
         </Text>
       </View>
@@ -197,7 +217,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 30,
     borderWidth: 4,
     borderColor: '#0b869b',
-
     padding: 20,
     backgroundColor: 'white',
     borderRadius: 20,
@@ -228,6 +247,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     width: 80,
     marginBottom: 30,
+    marginTop: 20,
   },
   label: {
     fontSize: 16,
@@ -244,26 +264,26 @@ const styles = StyleSheet.create({
     color: 'white',
     textAlign: 'center',
   },
-
   value: {
     fontSize: 16,
     marginBottom: 15,
     fontWeight: 'normal',
   },
   deleteButton: {
-    backgroundColor: '#ed7947',
+    backgroundColor: 'red',
     padding: 10,
     borderRadius: 8,
     alignItems: 'center',
     fontSize: 18,
     width: 80,
     marginBottom: 30,
+    marginTop: 20,
   },
   deleteButtonText: {
     color: 'white',
     fontWeight: 'bold',
   },
-  detailsEndereço: {
+  detailsEndereco: {
     marginVertical: 5,
     marginHorizontal: 30,
     borderWidth: 4,
@@ -273,7 +293,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     textAlign: 'center',
   },
-  labelEndereço: {
+  labelEndereco: {
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 15,

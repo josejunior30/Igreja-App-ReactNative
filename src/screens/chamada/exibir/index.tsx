@@ -15,6 +15,7 @@ function PresençaExibir({ initialDate = new Date(), initialCursoEscolhido = nul
   const [cursoEscolhido, setCursoEscolhido] = useState<number | null>(initialCursoEscolhido);
   const [presencas, setPresencas] = useState<PresencaDTO[]>([]);
   const navigation = useNavigation();
+  
   useEffect(() => {
     fetchPresencas();
   }, [selectedDate, cursoEscolhido]);
@@ -47,6 +48,13 @@ function PresençaExibir({ initialDate = new Date(), initialCursoEscolhido = nul
     }
   };
 
+  const formatDate = (date: Date) => {
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
+
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.containerVoltar} onPress={() => navigation.goBack()}>
@@ -65,7 +73,7 @@ function PresençaExibir({ initialDate = new Date(), initialCursoEscolhido = nul
           onChange={handleConfirm}
         />
       )}
-      <Text style={styles.labelDate}>{selectedDate.toISOString().split('T')[0]}</Text>
+      <Text style={styles.labelDate}>{formatDate(selectedDate)}</Text>
       <Text style={styles.labelCurso}>Escolha o curso:</Text>
       <View style={styles.pickerContainer}>
         <Picker
@@ -79,18 +87,15 @@ function PresençaExibir({ initialDate = new Date(), initialCursoEscolhido = nul
           ]}
           style={{
             inputIOS: {
-              color: 'white',
+              backgroundColor: 'white',
             },
             inputAndroid: {
-              color: 'white',
+              backgroundColor: 'white',
             },
             iconContainer: {
               top: 15,
               right: 15,
             },
-          }}
-          Icon={() => {
-            return <FontAwesome5 name="chevron-down" size={18} color="white" />;
           }}
         />
       </View>
@@ -155,12 +160,13 @@ const styles = StyleSheet.create({
     marginTop: 30,
     marginBottom: 10,
     fontWeight: 'bold',
-    color: 'white',
     borderWidth: 1,
-    borderColor: '#ed7947',
+    borderColor: '#00D4FF',
     marginHorizontal: 90,
     borderRadius: 20,
     paddingVertical: 10,
+    backgroundColor:'#00D4FF',
+    color:'white'
   },
   aluno: {
     textAlign: 'center',

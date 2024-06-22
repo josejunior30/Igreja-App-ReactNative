@@ -1,10 +1,20 @@
 import { Ionicons } from '@expo/vector-icons';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { RootStackParamList } from 'navigation/navigationTypes';
 import React, { useEffect, useState } from 'react';
-import { ScrollView, TextInput, View, Text, StyleSheet, Alert, TouchableOpacity } from 'react-native';
+import {
+  ScrollView,
+  TextInput,
+  View,
+  Text,
+  StyleSheet,
+  Alert,
+  TouchableOpacity,
+  Platform,
+} from 'react-native';
 import { Button } from 'react-native-paper';
 
 import { BASE_URL } from '~/contexts/system';
@@ -22,7 +32,6 @@ const AddAlunos = () => {
     nome: '',
     dataNascimento: new Date(),
     telefone: '',
-
     rg: '',
     cpfResponsavel: '',
     responsavel: '',
@@ -42,6 +51,8 @@ const AddAlunos = () => {
     },
   });
 
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
   useEffect(() => {
     const fetchGrupos = async () => {
       try {
@@ -55,7 +66,7 @@ const AddAlunos = () => {
     fetchGrupos();
   }, []);
 
-  const handleChange = (name: string, value: string | number) => {
+  const handleChange = (name: string, value: string | number | Date) => {
     if (name === 'projetos') {
       const projetoId = parseInt(value as string, 10);
       setAluno((prevAluno) => ({
@@ -66,21 +77,23 @@ const AddAlunos = () => {
         },
       }));
     } else if (name === 'dataNascimento') {
-      const [day, month, year] = (value as string).split('-').map(Number);
-      const dataNascimento = new Date(year, month - 1, day);
-      if (!isNaN(dataNascimento.getTime())) {
-        setAluno((prevAluno) => ({
-          ...prevAluno,
-          [name]: dataNascimento,
-        }));
-      } else {
-        console.error('Data inválida:', value);
-      }
+      const dataNascimento = value as Date;
+      setAluno((prevAluno) => ({
+        ...prevAluno,
+        [name]: dataNascimento,
+      }));
     } else {
       setAluno((prevAluno) => ({
         ...prevAluno,
         [name]: value,
       }));
+    }
+  };
+
+  const handleDateChange = (event: any, selectedDate?: Date) => {
+    setShowDatePicker(Platform.OS === 'ios');
+    if (selectedDate) {
+      handleChange('dataNascimento', selectedDate);
     }
   };
 
@@ -139,12 +152,24 @@ const AddAlunos = () => {
       </View>
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Data de Nascimento</Text>
-        <TextInput
-          style={styles.input}
-          value={formatDate(aluno.dataNascimento)}
-          placeholder="Digite a data de nascimento (dd-mm-yyyy)"
-          onChangeText={(text) => handleChange('dataNascimento', text)}
-        />
+        <View style={styles.dateContainer}>
+          <TextInput
+            style={styles.input}
+            value={formatDate(aluno.dataNascimento)}
+            placeholder="Digite a data de nascimento (dd-mm-yyyy)"
+            editable={false}
+          />
+
+          <Button onPress={() => setShowDatePicker(true)}> Inserir Data</Button>
+        </View>
+        {showDatePicker && (
+          <DateTimePicker
+            value={aluno.dataNascimento}
+            mode="date"
+            display="default"
+            onChange={handleDateChange}
+          />
+        )}
       </View>
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Telefone</Text>
@@ -155,7 +180,7 @@ const AddAlunos = () => {
           onChangeText={(text) => handleChange('telefone', text)}
         />
       </View>
-    
+
       <View style={styles.inputContainer}>
         <Text style={styles.label}>RG</Text>
         <TextInput
@@ -192,7 +217,7 @@ const AddAlunos = () => {
           onChangeText={(text) => handleChange('email', text)}
         />
       </View>
-      <View style={styles.inputContainer}>
+      <View style={styles.containerProjeto}>
         <Text style={styles.label}>O aluno possui alguma doença ?</Text>
         <Picker
           selectedValue={aluno.AlunoDoenca}
@@ -203,9 +228,7 @@ const AddAlunos = () => {
         </Picker>
       </View>
       <View style={styles.inputContainer}>
-        <Text style={styles.label}>Se sim, qual ?
-
-        </Text>
+        <Text style={styles.label}>Se sim, qual ?</Text>
         <TextInput
           style={styles.input}
           value={aluno.pergunta}
@@ -297,6 +320,9 @@ const styles = StyleSheet.create({
   inputContainer: {
     marginBottom: 15,
   },
+  containerProjeto: {
+    marginBottom: 15,
+  },
   label: {
     fontSize: 16,
     marginBottom: 5,
@@ -306,6 +332,11 @@ const styles = StyleSheet.create({
     borderColor: 'gray',
     borderWidth: 1,
     padding: 10,
+  },
+  dateContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   buttonContainer: {
     marginTop: 20,

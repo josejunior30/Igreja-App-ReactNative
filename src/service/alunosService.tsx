@@ -13,7 +13,7 @@ export function findById(id: number) {
 export function insertAluno(alunosDTO: any) {
   return axios.post(`${BASE_URL}/alunos`, alunosDTO);
 }
-export function updateMembro(id: number, alunosDTO: any) {
+export function updateAluno(id: number, alunosDTO: any) {
   return axios.put(`${BASE_URL}/alunos/${id}`, alunosDTO);
 }
 export function deleteAluno(id: number) {
@@ -23,6 +23,4 @@ export function findByNome(nome: string) {
   return axios.get(`${BASE_URL}/alunos/search?nome=${nome}`);
 }
 
-export function updateAluno(arg0: number, alunoEdit: alunosDTO) {
-    throw new Error('Function not implemented.');
-}
+

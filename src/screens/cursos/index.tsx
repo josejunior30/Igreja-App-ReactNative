@@ -65,7 +65,7 @@ const Cursos = () => {
 
 const styles = StyleSheet.create({
   containerTela: {
-    backgroundColor: '#D3D3D3',
+    backgroundColor: '#0b1f34',
   },
 
   container: {

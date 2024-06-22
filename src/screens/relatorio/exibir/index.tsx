@@ -85,7 +85,12 @@ const Relatorio = () => {
     setDatePickerVisibility(Platform.OS === 'ios');
     setSelectedDate(currentDate);
   };
-
+  const formatDate = (date: Date) => {
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
   return (
     <ScrollView style={styles.container}>
       <TouchableOpacity style={styles.containerVoltar} onPress={() => navigation.goBack()}>
@@ -104,9 +109,7 @@ const Relatorio = () => {
           onChange={handleConfirm}
         />
       )}
-
-      <Text style={styles.labelDate}>{selectedDate.toISOString().split('T')[0]}</Text>
-
+      <Text style={styles.labelDate}>{formatDate(selectedDate)}</Text>
       <Text style={styles.labelCurso}>Escolha o Curso:</Text>
       <View style={styles.pickerContainer}>
         <Picker
@@ -120,18 +123,15 @@ const Relatorio = () => {
           ]}
           style={{
             inputIOS: {
-              color: 'white',
+          
             },
             inputAndroid: {
-              color: 'white',
+          
             },
             iconContainer: {
               top: 15,
               right: 15,
             },
-          }}
-          Icon={() => {
-            return <FontAwesome5 name="chevron-down" size={18} color="white" />;
           }}
         />
       </View>
@@ -159,7 +159,7 @@ const Relatorio = () => {
               <TouchableOpacity
                 onPress={() => navigation.navigate('DetalhesRelatorio', { id: item.id })}>
                 <Text style={styles.professor}>
-                  Professor:  {item.projetosRelatorio.lider}  - {item.projetosRelatorio.nome}
+                  Professor: {item.projetosRelatorio.lider} - {item.projetosRelatorio.nome}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -203,11 +203,10 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     fontWeight: 'bold',
     color: 'white',
-    borderWidth: 1,
-    borderColor: '#ed7947',
     marginHorizontal: 90,
     borderRadius: 20,
     paddingVertical: 10,
+    backgroundColor: '#00D4FF',
   },
   labelCurso: {
     textAlign: 'center',
@@ -235,14 +234,12 @@ const styles = StyleSheet.create({
   pickerContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'white',
+    backgroundColor: 'white',
     borderRadius: 8,
     paddingHorizontal: 3,
     paddingVertical: 3,
     marginHorizontal: 50,
     marginBottom: 40,
-    color: 'white',
   },
   titulo: {
     textAlign: 'center',
@@ -260,7 +257,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginLeft: 30,
     color: 'white',
-    fontSize:17
+    fontSize: 17,
   },
   curso: {
     textAlign: 'center',
