@@ -12,4 +12,6 @@ export type RootStackParamList = {
   DetalhesAlunos: { id: number };
   AddAlunos: undefined;
   EditarAlunos: { id: number };
+  ChangePasswordScreen: undefined;
+  
 };

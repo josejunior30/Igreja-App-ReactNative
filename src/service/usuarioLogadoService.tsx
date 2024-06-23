@@ -1,5 +1,8 @@
-import { AxiosRequestConfig } from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
+
 import { getAccessToken } from '../service/authHelper'; // Importe a função para obter o token de acesso
+
+import { BASE_URL } from '~/contexts/system';
 import { requestBackend } from '~/models/request';
 
 export async function findMe() {
@@ -26,7 +29,22 @@ export async function findMe() {
     throw error;
   }
 }
-export function update(credentialsDTO: { username: any; oldPassword: string; newPassword: string; }) {
-    throw new Error("Function not implemented.");
-}
 
+export function update(credentialsDTO: any) {
+  const { oldPassword, newPassword } = credentialsDTO;
+  const url = `${BASE_URL}/user/me/password?oldPassword=${oldPassword}&newPassword=${newPassword}`;
+
+  const token = getAccessToken(); // Obter o token de autenticação
+  const headers = {
+    Authorization: `Bearer ${token}`, // Incluir o token no cabeçalho da requisição
+  };
+
+  const config: AxiosRequestConfig = {
+    method: 'put',
+    url,
+    data: credentialsDTO,
+    headers,
+  };
+
+  return axios(config);
+}

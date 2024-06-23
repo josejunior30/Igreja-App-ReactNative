@@ -1,97 +1,130 @@
-import React, { useContext, useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { FontAwesome } from '@expo/vector-icons';
-import * as UsuarioLogadoService from '~/service/usuarioLogadoService';
-import { ContextToken } from '~/contexts/context-token';
-import { getAccessTokenPayload, logout } from '~/service/authHelper';
+import { Ionicons } from '@expo/vector-icons';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
+import { AuthStackParamList } from 'navigation/auth.routes';
+import { RootStackParamList } from 'navigation/navigationTypes';
+import React, { useState } from 'react';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Button, Alert } from 'react-native';
 
-function ChangePassword() {
-    const [showPassword, setShowPassword] = useState(false);
-    const [oldPassword, setOldPassword] = useState('');
-    const [newPassword, setNewPassword] = useState('');
-    const [confirmNewPassword, setConfirmNewPassword] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');
-    const [successMessage, setSuccessMessage] = useState('');
-    const { contextTokenPayload, setContextTokenPayload } = useContext(ContextToken);
-  
-    const handleChangePassword = async () => {
-      if (newPassword !== confirmNewPassword) {
-        setErrorMessage('As senhas não coincidem.');
+import { useAuth } from '~/contexts/AuthContext';
+import * as usuarioLogadoService from '~/service/usuarioLogadoService';
+
+const ChangePasswordScreen = () => {
+  const [oldPassword, setOldPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const navigation = useNavigation<NavigationProp<RootStackParamList & AuthStackParamList>>();
+  const { getAccessTokenPayload, logout } = useAuth();
+
+  const handleChangePassword = async () => {
+    if (newPassword !== confirmNewPassword) {
+      setErrorMessage('As senhas não coincidem.');
+      return;
+    }
+
+    try {
+      const tokenPayload = await getAccessTokenPayload();
+      if (!tokenPayload) {
+        setErrorMessage('Usuário não autenticado.');
         return;
       }
-  
-      try {
-        const tokenPayload = getAccessTokenPayload(); // Obter payload do token de acesso
-        if (!tokenPayload) {
-          // Tratar caso o payload do token não exista
-          return;
-        }
-  
-        const { user_name } = tokenPayload; // Extrair o username do payload do token
-        const credentialsDTO = {
-          username: user_name,
-          oldPassword,
-          newPassword,
-        };
-  
-        const response = await UsuarioLogadoService.update(credentialsDTO);
-        setSuccessMessage('Senha atualizada com sucesso!');
-        setOldPassword('');
-        setNewPassword('');
-        setConfirmNewPassword('');
-        logout();
-      } catch (error) {
+
+      const credentialsDTO = {
+        username: tokenPayload.user_name,
+        oldPassword,
+        newPassword,
+      };
+
+      await usuarioLogadoService.update(credentialsDTO);
+      setSuccessMessage('Senha atualizada com sucesso!');
+      Alert.alert('Sucesso', 'Senha atualizada com sucesso!', [
+        { text: 'OK', onPress: () => navigation.navigate('Inicio') },
+      ]);
+      setOldPassword('');
+      setNewPassword('');
+      setConfirmNewPassword('');
+      await logout(); 
+      navigation.navigate('LoginScreen');
+    } catch (error) {
+      if (error instanceof Error) {
+        setErrorMessage(`Erro: ${error.message}`);
+      } else {
         setErrorMessage('Erro ao atualizar a senha. Por favor, tente novamente.');
-        console.error('Erro ao atualizar a senha:', error);
       }
-    };
-  
-    return { handleChangePassword, oldPassword, setOldPassword, newPassword, setNewPassword, confirmNewPassword, setConfirmNewPassword, errorMessage, successMessage};
-  }
-  
-  
-  
-  
-  
-  
+      console.error('Erro ao atualizar a senha:', error);
+    }
+  };
+
+  const toggleShowOldPassword = () => {
+    setShowOldPassword(!showOldPassword);
+  };
+
+  const toggleShowNewPassword = () => {
+    setShowNewPassword(!showNewPassword);
+  };
+
+  const toggleShowConfirmPassword = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
+
   return (
     <View style={styles.container}>
-      <View style={styles.inputContainer}>
-        <FontAwesome name="lock" size={24} color="black" />
-        <TextInput
-          style={styles.input}
-          placeholder="Senha antiga"
-          secureTextEntry
-          value={oldPassword}
-          onChangeText={setOldPassword}
-        />
-      </View>
-      <View style={styles.inputContainer}>
-        <FontAwesome name="lock" size={24} color="black" />
-        <TextInput
-          style={styles.input}
-          placeholder="Nova senha"
-          secureTextEntry
-          value={newPassword}
-          onChangeText={setNewPassword}
-        />
-      </View>
-      <View style={styles.inputContainer}>
-        <FontAwesome name="lock" size={24} color="black" />
-        <TextInput
-          style={styles.input}
-          placeholder="Confirmar nova senha"
-          secureTextEntry
-          value={confirmNewPassword}
-          onChangeText={setConfirmNewPassword}
-        />
-      </View>
-      <Text style={styles.errorMessage}>{errorMessage}</Text>
-      <Text style={styles.successMessage}>{successMessage}</Text>
-      <TouchableOpacity style={styles.button} onPress={handleChangePassword}>
-        <Text style={styles.buttonText}>Atualizar Senha</Text>
+      <TouchableOpacity style={styles.containerVoltar} onPress={() => navigation.goBack()}>
+        <Ionicons name="arrow-back-circle" size={30} color="white" />
+        <Text style={styles.voltar}>Voltar</Text>
       </TouchableOpacity>
+
+      <View style={styles.containerInput}>
+        <View style={styles.passwordContainer}>
+          <TextInput
+            style={styles.inputPassword}
+            placeholder="Senha antiga"
+            secureTextEntry={!showOldPassword}
+            value={oldPassword}
+            onChangeText={setOldPassword}
+          />
+          <TouchableOpacity style={styles.toggleButton} onPress={toggleShowOldPassword}>
+            <FontAwesomeIcon icon={showOldPassword ? faEye : faEyeSlash} size={20} color="#333" />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.passwordContainer}>
+          <TextInput
+            style={styles.inputPassword}
+            placeholder="Nova senha"
+            secureTextEntry={!showNewPassword}
+            value={newPassword}
+            onChangeText={setNewPassword}
+          />
+          <TouchableOpacity style={styles.toggleButton} onPress={toggleShowNewPassword}>
+            <FontAwesomeIcon icon={showNewPassword ? faEye : faEyeSlash} size={20} color="#333" />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.passwordContainer}>
+          <TextInput
+            style={styles.inputPassword}
+            placeholder="Confirmar nova senha"
+            secureTextEntry={!showConfirmPassword}
+            value={confirmNewPassword}
+            onChangeText={setConfirmNewPassword}
+          />
+          <TouchableOpacity style={styles.toggleButton} onPress={toggleShowConfirmPassword}>
+            <FontAwesomeIcon
+              icon={showConfirmPassword ? faEye : faEyeSlash}
+              size={20}
+              color="#333"
+            />
+          </TouchableOpacity>
+        </View>
+        {errorMessage && <Text style={styles.error}>{errorMessage}</Text>}
+        {successMessage && <Text style={styles.success}>{successMessage}</Text>}
+        <Button title="Salvar" onPress={handleChangePassword} />
+      </View>
     </View>
   );
 };
@@ -99,43 +132,61 @@ function ChangePassword() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#0b1f34',
+  },
+  containerInput: {
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
     paddingHorizontal: 20,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-    marginBottom: 20,
-    width: '100%',
   },
   input: {
+    width: '100%',
+    height: 50,
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginBottom: 20,
+    paddingHorizontal: 10,
+    backgroundColor: 'white',
+  },
+  inputPassword: {
     flex: 1,
-    height: 40,
-    marginLeft: 10,
-    fontSize: 18,
+    height: 50,
+    paddingHorizontal: 10,
+    backgroundColor: 'white',
   },
-  errorMessage: {
+  error: {
     color: 'red',
-    marginTop: 10,
+    marginBottom: 10,
   },
-  successMessage: {
+  success: {
     color: 'green',
-    marginTop: 10,
+    marginBottom: 10,
   },
-  button: {
-    backgroundColor: '#14375B',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 5,
+  voltar: {
+    fontSize: 16,
+    marginLeft: 10,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  containerVoltar: {
+    marginLeft: 30,
+    flexDirection: 'row',
+    marginBottom: 100,
     marginTop: 20,
   },
-  buttonText: {
-    color: '#fff',
-    fontSize: 18,
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginBottom: 20,
+    borderRadius: 4,
+  },
+  toggleButton: {
+    padding: 10,
+    backgroundColor: 'white',
+    height: 50,
   },
 });
 

@@ -62,11 +62,11 @@ export default function Inicio() {
 const styles = StyleSheet.create({
   container: {
     flex: 2,
-    backgroundColor: '#DCDCDC'
+    backgroundColor: '#0b1f34'
   },
   containerCard: {
     marginTop: 80,
-    backgroundColor: '#DCDCDC',
+  
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',

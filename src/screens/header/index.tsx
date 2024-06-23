@@ -1,35 +1,62 @@
-import React, { useEffect, useState } from 'react';
-import { View, Image, StyleSheet, Text, Button, TouchableOpacity, Modal, Pressable } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { NativeStackHeaderProps } from '@react-navigation/native-stack';
+import { AuthStackParamList } from 'navigation/auth.routes';
+import { RootStackParamList } from 'navigation/navigationTypes';
+import React, { useEffect, useState } from 'react';
+import {
+  View,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  Modal,
+  Pressable,
+  ActivityIndicator,
+} from 'react-native';
 
-import { useAuth } from '../../contexts/AuthContext'; // Importe o contexto de autenticação
+import { useAuth } from '../../contexts/AuthContext';
+
 import { UsuarioDTO } from '~/models/usuario';
 import * as usuarioLogadoService from '~/service/usuarioLogadoService';
 
 const Header: React.FC<NativeStackHeaderProps> = (props) => {
-  const { isAuthenticated, logout } = useAuth(); 
-  const [userName, setUserName] = useState<UsuarioDTO | undefined>(); 
-  const [showSubMenu, setShowSubMenu] = useState(false); // Estado para controlar a exibição do submenu
-  const navigation = useNavigation();
+  const { isAuthenticated, logout } = useAuth();
+  const [userName, setUserName] = useState<UsuarioDTO | undefined>();
+  const [showSubMenu, setShowSubMenu] = useState(false);
+  const [loading, setLoading] = useState(false); 
+
+  const navigation = useNavigation<NavigationProp<RootStackParamList & AuthStackParamList>>();
 
   useEffect(() => {
-    usuarioLogadoService.findMe().then((response) => {
-      setUserName(response.data);
-      console.log(response.data);
-    });
+   
+    const fetchUserName = async () => {
+      try {
+        setLoading(true);
+        const response = await usuarioLogadoService.findMe();
+        setUserName(response.data);
+      } catch (error) {
+        console.error('Erro ao carregar nome do usuário:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserName();
   }, []);
 
   const handleLogout = async () => {
-    await logout();
-    navigation.navigate('LoginScreen');
+    try {
+      await logout();
+      navigation.navigate('LoginScreen');
+    } catch (error) {
+      console.error('Erro durante o logout:', error);
+    }
   };
 
-  const handleResetPassword = () => {
-    // Lógica para redefinir senha
-    console.log('Redefinir Senha');
-  };
+  if (loading) {
+    return <ActivityIndicator size="small" color="#fff" />;
+  }
 
   return (
     <View style={styles.container}>
@@ -37,7 +64,6 @@ const Header: React.FC<NativeStackHeaderProps> = (props) => {
         <Image style={styles.logo} source={require('../../../assets/estacao.png')} />
       </View>
       <View style={styles.containerUser}>
-        {/* TouchableOpacity para abrir o submenu */}
         <TouchableOpacity onPress={() => setShowSubMenu(true)}>
           <FontAwesome name="user-circle" size={30} color="white" />
         </TouchableOpacity>
@@ -45,19 +71,19 @@ const Header: React.FC<NativeStackHeaderProps> = (props) => {
           <Text style={styles.nome}>Olá, {userName?.nome}!</Text>
         </TouchableOpacity>
 
-        {/* Modal para exibir o submenu */}
         <Modal
           animationType="slide"
-          transparent={true}
+          transparent
           visible={showSubMenu}
-          onRequestClose={() => setShowSubMenu(false)}
-        >
+          onRequestClose={() => setShowSubMenu(false)}>
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
               <Pressable style={styles.modalOption} onPress={handleLogout}>
-                <Text style={styles.modalOptionText}>Logout</Text>
+                <Text style={styles.modalOptionText}>Sair</Text>
               </Pressable>
-              <Pressable style={styles.modalOption} onPress={handleResetPassword}>
+              <Pressable
+                style={styles.modalOption}
+                onPress={() => navigation.navigate('ChangePasswordScreen')}>
                 <Text style={styles.modalOptionText}>Redefinir Senha</Text>
               </Pressable>
               <Pressable style={styles.modalOption} onPress={() => setShowSubMenu(false)}>
@@ -103,7 +129,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Fundo escuro para destacar o modal
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContent: {
     backgroundColor: 'white',
