@@ -1,5 +1,5 @@
+import { Ionicons } from '@expo/vector-icons';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-
 import { RootStackParamList } from 'navigation/navigationTypes';
 import React, { useEffect, useState } from 'react';
 import {
@@ -10,6 +10,7 @@ import {
   Image,
   ImageBackground,
   Vibration,
+  TouchableOpacity,
 } from 'react-native';
 import { Button, Card } from 'react-native-paper';
 
@@ -19,7 +20,7 @@ import { cursosDTO } from '~/models/cursos';
 
 const Cursos = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  
+
   const [cursosDTO, setCursosDTO] = useState<cursosDTO[]>([]);
   const fotoCoordenador = 'https://i.postimg.cc/zGdVdHpN/gilson.png';
   useEffect(() => {
@@ -36,6 +37,10 @@ const Cursos = () => {
 
   return (
     <ScrollView style={styles.containerTela}>
+      <TouchableOpacity style={styles.containerVoltar} onPress={() => navigation.goBack()}>
+        <Ionicons name="arrow-back-circle" size={30} color="white" />
+        <Text style={styles.voltar}>Voltar</Text>
+      </TouchableOpacity>
       {cursosDTO.map((curso, index) => (
         <Card key={index} style={styles.container}>
           <ImageBackground source={{ uri: curso.foto_fundo }} style={styles.imagemFundo} />
@@ -110,11 +115,10 @@ const styles = StyleSheet.create({
     marginHorizontal: '10%',
     justifyContent: 'center',
     alignSelf: 'center',
-  textAlign:'center'
+    textAlign: 'center',
   },
   textContainer: {
     marginLeft: 12,
-
   },
   button: {
     backgroundColor: '#ed7947',
@@ -133,6 +137,18 @@ const styles = StyleSheet.create({
     fontSize: 12,
     justifyContent: 'center',
     alignSelf: 'center',
+  },
+  voltar: {
+    fontSize: 16,
+    marginLeft: 10,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  containerVoltar: {
+    marginLeft: 30,
+    flexDirection: 'row',
+    marginBottom: 10,
+    marginTop: 30,
   },
 });
 

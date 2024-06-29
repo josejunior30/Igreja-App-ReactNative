@@ -2,7 +2,7 @@ import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import { NavigationProp, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from 'navigation/navigationTypes';
 import { useEffect, useState } from 'react';
-import { ScrollView, Text, View, StyleSheet, TouchableOpacity } from 'react-native';
+import { ScrollView, Text, View, StyleSheet, TouchableOpacity, Linking } from 'react-native';
 import { Button } from 'react-native-paper';
 
 import * as cursosService from '../../../service/cursosService';
@@ -14,16 +14,16 @@ type DetalheCursoRouteProp = RouteProp<RootStackParamList, 'DetalheCurso'>;
 const DetalheCurso = () => {
   const route = useRoute<DetalheCursoRouteProp>();
   const { id } = route.params;
-  const [cursosDTO, setCursosDTO] = useState<cursosDTO>();
+  const [cursoDTO, setCursoDTO] = useState<cursosDTO>();
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
-  const loadCursosDTO = (id: number) => {
+  const loadCursoDTO = (id: number) => {
     cursosService
       .findById(id)
       .then((response) => {
         console.log('Detalhes do curso:', response.data);
-        setCursosDTO(response.data);
+        setCursoDTO(response.data);
       })
       .catch((error) => {
         console.error('Erro ao buscar detalhes do curso', error);
@@ -35,15 +35,23 @@ const DetalheCurso = () => {
 
   useEffect(() => {
     if (id) {
-      loadCursosDTO(id);
+      loadCursoDTO(id);
     }
   }, [id]);
+
+  const handleWhatsApp = (telefone: string) => {
+    // Remova caracteres não numéricos do telefone
+    const telefoneLimpo = telefone.replace(/\D/g, '');
+    // Adicione o código do país (Brasil: +55) ao número de telefone
+    const telefoneComCodigoPais = `+55${telefoneLimpo}`;
+    Linking.openURL(`whatsapp://send?phone=${telefoneComCodigoPais}`);
+  };
 
   if (loading) {
     return <Text>Carregando...</Text>;
   }
 
-  if (!cursosDTO) {
+  if (!cursoDTO) {
     return <Text>Curso não encontrado</Text>;
   }
 
@@ -52,7 +60,7 @@ const DetalheCurso = () => {
       <View style={styles.containerBtn}>
         <Button
           style={styles.button}
-          onPress={() => navigation.navigate('Presença', { id: cursosDTO.id })}>
+          onPress={() => navigation.navigate('Presença', { id: cursoDTO.id })}>
           <Text style={styles.buttonText}>Presença</Text>
         </Button>
 
@@ -71,19 +79,25 @@ const DetalheCurso = () => {
           <Text style={[styles.cell, styles.headerText]}>Nome</Text>
           <Text style={[styles.cell, styles.headerText]}>Telefone</Text>
         </View>
-        {cursosDTO.alunos.map((aluno, index) => (
+        {cursoDTO.alunos.map((aluno, index) => (
           <View key={index} style={styles.row}>
             <Text style={styles.indexCell}>{index + 1}</Text>
-            <Text style={styles.nome}>{aluno.nome}</Text>
-            <Text style={styles.cell}>
-              <FontAwesome name="whatsapp" size={16} color="green" /> {aluno.telefone}
-            </Text>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('DetalhesAlunos', { id: aluno.id })}>
+              <Text style={styles.nome}>{aluno.nome}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => handleWhatsApp(aluno.telefone)}>
+              <Text style={styles.cell}>
+                <FontAwesome name="whatsapp" size={16} color="green" /> {aluno.telefone}
+              </Text>
+            </TouchableOpacity>
           </View>
         ))}
       </View>
     </ScrollView>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -107,13 +121,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'white',
   },
-
   button: {
     backgroundColor: '#ed7947',
     marginLeft: 15,
     marginRight: 15,
   },
-
   buttonText: {
     color: 'white',
     fontSize: 16,

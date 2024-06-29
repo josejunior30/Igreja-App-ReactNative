@@ -1,13 +1,10 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 
+import { AuthStackParamList } from './navigationTypes';
+
 import LoginScreen from '~/screens/Login';
 import Welcome from '~/screens/Login/bem-vindo';
-
-export type AuthStackParamList = {
-  Welcome: undefined;
-  LoginScreen: undefined;
-};
 
 const Stack = createNativeStackNavigator<AuthStackParamList>();
 

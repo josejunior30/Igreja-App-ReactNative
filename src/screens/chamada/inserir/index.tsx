@@ -3,7 +3,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { useNavigation, useRoute, RouteProp, NavigationProp } from '@react-navigation/native';
 import { RootStackParamList } from 'navigation/navigationTypes';
 import React, { useState, useEffect } from 'react';
-import { ScrollView, View, Text, StyleSheet, Switch, TouchableOpacity } from 'react-native';
+import { ScrollView, View, Text, StyleSheet, Switch, TouchableOpacity, Alert } from 'react-native';
 import { Button } from 'react-native-paper';
 
 import * as cursosService from '../../../service/cursosService';
@@ -16,12 +16,14 @@ type DetalheCursoRouteProp = RouteProp<RootStackParamList, 'Presença'>;
 
 const Presença = () => {
   const route = useRoute<DetalheCursoRouteProp>();
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+
   const { id } = route.params;
   const [curso, setCurso] = useState<cursosDTO>();
   const [loading, setLoading] = useState(true);
   const [listaDeAlunos, setListaDeAlunos] = useState<Alunos[]>([]);
   const [presencas, setPresencas] = useState<PresencaDTO[]>([]);
-  const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
@@ -32,6 +34,15 @@ const Presença = () => {
         console.log('Detalhes do curso:', response.data);
         setCurso(response.data);
         setListaDeAlunos(response.data.alunos);
+        // Prepara as presenças baseado nos alunos do curso
+        const initialPresencas = response.data.alunos.map((aluno: any) => ({
+          id: 0,
+          data: selectedDate,
+          chamadaAluno: -1,
+          alunos: { ...aluno },
+          projetosChamada: { id: response.data.id, nome: response.data.nome },
+        }));
+        setPresencas(initialPresencas);
       })
       .catch((error) => {
         console.error('Erro ao buscar detalhes do curso:', error);
@@ -53,48 +64,48 @@ const Presença = () => {
     isChecked: boolean
   ) => {
     setPresencas((prevPresencas) => {
-      const updatedPresencas = [...prevPresencas];
-      let index = updatedPresencas.findIndex((p) => p.alunos.id === alunoId);
-
-      if (index === -1) {
-        updatedPresencas.push({
-          id: 0,
-          data: new Date(selectedDate),
-          chamadaAluno: 0,
-          alunos: {
-            id: alunoId,
-            nome: '',
-          },
-          projetosChamada: {
-            id: curso?.id ?? 0,
-            nome: '',
-          },
-        });
-        index = updatedPresencas.length - 1;
-      }
-
-      if (tipoPresenca === 'presente') {
-        updatedPresencas[index].chamadaAluno = isChecked ? 0 : -1;
-      } else if (tipoPresenca === 'ausente') {
-        updatedPresencas[index].chamadaAluno = isChecked ? 1 : -1;
-      }
-
+      const updatedPresencas = prevPresencas.map((presenca) => {
+        if (presenca.alunos.id === alunoId) {
+          if (tipoPresenca === 'presente') {
+            return { ...presenca, chamadaAluno: isChecked ? 0 : -1 };
+          } else if (tipoPresenca === 'ausente') {
+            return { ...presenca, chamadaAluno: isChecked ? 1 : -1 };
+          }
+        }
+        return presenca;
+      });
       return updatedPresencas;
     });
   };
 
   const enviarListaDePresenca = () => {
-    presencas.forEach((presenca) => {
-      presencaService
-        .insert(presenca)
-        .then((response) => {
-          console.log('Presença enviada com sucesso:', response.data);
-        })
-        .catch((error) => {
-          console.error('Erro ao enviar presença:', error);
-        });
+    Promise.all(
+      presencas.map((presenca) => {
+        if (presenca.chamadaAluno !== -1) {
+          return presencaService
+            .insert(presenca)
+            .then((response) => {
+              console.log('Presença enviada com sucesso:', response.data);
+            })
+            .catch((error) => {
+              console.error('Erro ao enviar presença:', error);
+              throw error; // Propaga o erro para garantir que todos os envios são tratados
+            });
+        }
+        return Promise.resolve(); // Retorna uma promessa resolvida para evitar erros de mapa vazio
+      })
+    ).then(() => {
+      setShowSuccessMessage(true);
+      setTimeout(() => {
+        setShowSuccessMessage(false);
+        loadCurso(id); // Recarrega os dados após o envio
+      }, 3000); // Esconde a mensagem após 3 segundos
+  
+      // Exibe o alerta de sucesso
+      Alert.alert('Sucesso!', 'Presença enviada com sucesso.');
     });
   };
+  
 
   const showDatePicker = () => {
     setDatePickerVisibility(true);
@@ -107,13 +118,24 @@ const Presença = () => {
   const handleConfirm = (event: any, date: Date | undefined) => {
     setDatePickerVisibility(false);
     if (date) {
-      setSelectedDate(date.toISOString().split('T')[0]);
+      setSelectedDate(date);
+      // Atualiza as presenças com a nova data selecionada
+      setPresencas((prevPresencas) =>
+        prevPresencas.map((presenca) => ({ ...presenca, data: date }))
+      );
     }
   };
 
   if (loading) {
     return <Text>Carregando...</Text>;
   }
+
+  const formatDate = (date: Date) => {
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
 
   return (
     <ScrollView style={styles.container}>
@@ -127,13 +149,13 @@ const Presença = () => {
         </Button>
         {isDatePickerVisible && (
           <DateTimePicker
-            value={new Date(selectedDate)}
+            value={selectedDate}
             mode="date"
             display="default"
             onChange={handleConfirm}
           />
         )}
-        <Text style={styles.labelDate}>{selectedDate.toString().split('T')[0]}</Text>
+        <Text style={styles.labelDate}>{formatDate(selectedDate)}</Text>
       </View>
       {curso && (
         <View style={styles.table}>
@@ -166,6 +188,11 @@ const Presença = () => {
       <Button style={styles.btnEnviar} onPress={enviarListaDePresenca}>
         <Text style={styles.btnEnviarText}>Enviar</Text>
       </Button>
+      {showSuccessMessage && (
+        <View style={styles.successMessage}>
+          <Text style={styles.successMessageText}>Presença enviada com sucesso!</Text>
+        </View>
+      )}
     </ScrollView>
   );
 };
@@ -174,6 +201,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     backgroundColor: '#0b1f34',
+    paddingBottom:50
   },
   table: {
     marginTop: 16,
@@ -269,6 +297,17 @@ const styles = StyleSheet.create({
   },
   box: {
     width: 90,
+  },
+  successMessage: {
+    backgroundColor: '#4BB543',
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 20,
+    alignItems: 'center',
+  },
+  successMessageText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
 });
 

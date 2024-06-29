@@ -1,14 +1,16 @@
 import { Ionicons } from '@expo/vector-icons';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { useNavigation, NavigationProp } from '@react-navigation/native';
-import { AuthStackParamList } from 'navigation/auth.routes';
-import { RootStackParamList } from 'navigation/navigationTypes';
+import { useNavigation } from '@react-navigation/native';
+
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Button, Alert } from 'react-native';
+import * as Updates from 'expo-updates';
 
 import { useAuth } from '~/contexts/AuthContext';
 import * as usuarioLogadoService from '~/service/usuarioLogadoService';
+
+
 
 const ChangePasswordScreen = () => {
   const [oldPassword, setOldPassword] = useState('');
@@ -19,7 +21,8 @@ const ChangePasswordScreen = () => {
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const navigation = useNavigation<NavigationProp<RootStackParamList & AuthStackParamList>>();
+
+  const navigation = useNavigation();
   const { getAccessTokenPayload, logout } = useAuth();
 
   const handleChangePassword = async () => {
@@ -44,13 +47,17 @@ const ChangePasswordScreen = () => {
       await usuarioLogadoService.update(credentialsDTO);
       setSuccessMessage('Senha atualizada com sucesso!');
       Alert.alert('Sucesso', 'Senha atualizada com sucesso!', [
-        { text: 'OK', onPress: () => navigation.navigate('Inicio') },
+        {
+          text: 'OK',
+          onPress: async () => {
+            await logout();
+            await Updates.reloadAsync();
+          },
+        },
       ]);
       setOldPassword('');
       setNewPassword('');
       setConfirmNewPassword('');
-      await logout(); 
-      navigation.navigate('LoginScreen');
     } catch (error) {
       if (error instanceof Error) {
         setErrorMessage(`Erro: ${error.message}`);
@@ -114,11 +121,7 @@ const ChangePasswordScreen = () => {
             onChangeText={setConfirmNewPassword}
           />
           <TouchableOpacity style={styles.toggleButton} onPress={toggleShowConfirmPassword}>
-            <FontAwesomeIcon
-              icon={showConfirmPassword ? faEye : faEyeSlash}
-              size={20}
-              color="#333"
-            />
+            <FontAwesomeIcon icon={showConfirmPassword ? faEye : faEyeSlash} size={20} color="#333" />
           </TouchableOpacity>
         </View>
         {errorMessage && <Text style={styles.error}>{errorMessage}</Text>}
@@ -138,15 +141,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 20,
-  },
-  input: {
-    width: '100%',
-    height: 50,
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginBottom: 20,
-    paddingHorizontal: 10,
-    backgroundColor: 'white',
   },
   inputPassword: {
     flex: 1,

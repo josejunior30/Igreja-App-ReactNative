@@ -1,9 +1,19 @@
+import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  StyleSheet,
+  Alert,
+  ScrollView,
+  TouchableOpacity,
+} from 'react-native';
 
 import { BASE_URL } from '~/contexts/system';
 import { RelatorioDTO, projetosRelatorio } from '~/models/relatorio';
@@ -14,6 +24,7 @@ const AddRelatorio = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showSelectedDate, setShowSelectedDate] = useState('');
   const navigation = useNavigation<NavigationProp<any>>();
 
   const [relatorioDTO, setRelatorioDTO] = useState<RelatorioDTO>({
@@ -60,6 +71,7 @@ const AddRelatorio = () => {
         ...prevDTO,
         [name]: data,
       }));
+      setShowSelectedDate(formatDate(data)); // Atualiza a data selecionada formatada
     } else {
       setRelatorioDTO((prevDTO) => ({
         ...prevDTO,
@@ -107,9 +119,23 @@ const AddRelatorio = () => {
     }
   };
 
+  const formatDate = (date: Date) => {
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    return `${day}/${month}/${year}`;
+  };
+
   return (
     <ScrollView style={styles.container}>
-      <Button  title="Escolher Data" onPress={showDatePickerHandler}  />
+      <TouchableOpacity style={styles.containerVoltar} onPress={() => navigation.goBack()}>
+        <Ionicons name="arrow-back-circle" size={30} color="black" />
+        <Text style={styles.voltar}>Voltar</Text>
+      </TouchableOpacity>
+      <Button title="Escolher Data" onPress={showDatePickerHandler} />
+      {showSelectedDate !== '' && (
+        <Text style={styles.selectedDate}>Data selecionada: {showSelectedDate}</Text>
+      )}
       {showDatePicker && (
         <DateTimePicker
           value={relatorioDTO.data}
@@ -161,11 +187,13 @@ const AddRelatorio = () => {
         onChangeText={(value) => handleChange('Mais alguma observação ou sugestão?', value)}
       />
       <View style={styles.containerProjeto}>
-        <Text style={styles.label}>Selcione o Curso:</Text>
+        <Text style={styles.labelProjeto}>Selecione o Projeto:</Text>
         <Picker
           selectedValue={relatorioDTO.projetosRelatorio.id}
           onValueChange={(value) => handleChange('projetosRelatorio', value)}
           style={styles.picker}>
+          {/* Adicionando um item de seleção padrão */}
+          <Picker.Item label="Selecione..." />
           {projetos.map((projeto) => (
             <Picker.Item key={projeto.id} label={projeto.nome} value={projeto.id} />
           ))}
@@ -173,6 +201,11 @@ const AddRelatorio = () => {
       </View>
 
       <Button title="Enviar Relatório" onPress={handleSubmit} />
+      {isModalVisible && (
+        <View style={styles.successMessage}>
+          <Text style={styles.successMessageText}>Relatório enviado com sucesso!</Text>
+        </View>
+      )}
     </ScrollView>
   );
 };
@@ -188,11 +221,16 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginTop: 30,
   },
+  labelProjeto: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginTop: 15,
+    marginBottom: 30,
+  },
   pergunta: {
     fontSize: 16,
     fontWeight: 'bold',
   },
-
   input: {
     height: 40,
     borderColor: '#ccc',
@@ -203,10 +241,37 @@ const styles = StyleSheet.create({
   picker: {
     height: 50,
     width: '100%',
-    
   },
   containerProjeto: {
     flexDirection: 'row',
+  },
+  successMessage: {
+    backgroundColor: '#4BB543',
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 20,
+    alignItems: 'center',
+  },
+  successMessageText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  selectedDate: {
+    marginTop: 10,
+    marginBottom: 10,
+    fontSize: 16,
+  },
+  voltar: {
+    fontSize: 16,
+    marginLeft: 10,
+    fontWeight: 'bold',
+  
+  },
+  containerVoltar: {
+    marginLeft: 30,
+    flexDirection: 'row',
+    marginBottom: 20,
+    marginTop: 20,
   },
 });
 

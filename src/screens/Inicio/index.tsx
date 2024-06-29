@@ -38,7 +38,7 @@ export default function Inicio() {
       </Animatable.View>
       
       <Animatable.View animation="fadeInRight" delay={600} style={styles.containerCard}>
-        <TouchableHighlight  underlayColor="#DDDDDD">
+        <TouchableHighlight  underlayColor="#DDDDDD" onPress={() => handlePress('NotificationScreen')}>
           <View>
             <Card style={styles.avisos} elevation={5}>
               <Ionicons name="notifications" style={styles.icone} />

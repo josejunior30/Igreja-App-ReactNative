@@ -154,7 +154,7 @@ const AddAlunos = () => {
         <Text style={styles.label}>Data de Nascimento</Text>
         <View style={styles.dateContainer}>
           <TextInput
-            style={styles.input}
+            style={styles.inputData}
             value={formatDate(aluno.dataNascimento)}
             placeholder="Digite a data de nascimento (dd-mm-yyyy)"
             editable={false}
@@ -316,6 +316,7 @@ const AddAlunos = () => {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
+    backgroundColor:'#0b1f34'
   },
   inputContainer: {
     marginBottom: 15,
@@ -326,12 +327,22 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     marginBottom: 5,
+    color:'white'
   },
   input: {
     height: 40,
     borderColor: 'gray',
     borderWidth: 1,
     padding: 10,
+    backgroundColor:'white'
+  },
+  inputData: {
+    height: 40,
+    width:250,
+    borderColor: 'gray',
+    borderWidth: 1,
+    padding: 10,
+    backgroundColor:'white'
   },
   dateContainer: {
     flexDirection: 'row',

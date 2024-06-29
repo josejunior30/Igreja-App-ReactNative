@@ -1,8 +1,7 @@
 import { FontAwesome } from '@expo/vector-icons';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { NativeStackHeaderProps } from '@react-navigation/native-stack';
-import { AuthStackParamList } from 'navigation/auth.routes';
-import { RootStackParamList } from 'navigation/navigationTypes';
+import { RootStackParamList, AuthStackParamList } from 'navigation/navigationTypes';
 import React, { useEffect, useState } from 'react';
 import {
   View,
@@ -24,12 +23,11 @@ const Header: React.FC<NativeStackHeaderProps> = (props) => {
   const { isAuthenticated, logout } = useAuth();
   const [userName, setUserName] = useState<UsuarioDTO | undefined>();
   const [showSubMenu, setShowSubMenu] = useState(false);
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
 
   const navigation = useNavigation<NavigationProp<RootStackParamList & AuthStackParamList>>();
 
   useEffect(() => {
-   
     const fetchUserName = async () => {
       try {
         setLoading(true);
@@ -61,7 +59,9 @@ const Header: React.FC<NativeStackHeaderProps> = (props) => {
   return (
     <View style={styles.container}>
       <View style={styles.containerLogo}>
-        <Image style={styles.logo} source={require('../../../assets/estacao.png')} />
+        <TouchableOpacity onPress={() => navigation.navigate('Inicio')}>
+          <Image style={styles.logo} source={require('../../../assets/estacao.png')} />
+        </TouchableOpacity>
       </View>
       <View style={styles.containerUser}>
         <TouchableOpacity onPress={() => setShowSubMenu(true)}>

@@ -13,5 +13,11 @@ export type RootStackParamList = {
   AddAlunos: undefined;
   EditarAlunos: { id: number };
   ChangePasswordScreen: undefined;
+  NotificationScreen:undefined;
+
+};
+export type AuthStackParamList = {
+  Welcome: undefined;
+  LoginScreen: undefined;
   
 };

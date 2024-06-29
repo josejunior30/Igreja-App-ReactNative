@@ -3,6 +3,7 @@
     "name": "sibape",
     "slug": "sibape",
     "version": "1.0.0",
+    "projectId": "sibape-123",
 
     "web": {
       "favicon": "./assets/favicon.png"

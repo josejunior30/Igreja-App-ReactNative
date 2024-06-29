@@ -20,6 +20,7 @@ type DetalhesRelatorioRouteProp = RouteProp<RootStackParamList, 'DetalhesRelator
 const DetalhesRelatorio = () => {
   const [relatorioDTO, setRelatorioDTO] = useState<RelatorioDTO | null>(null);
   const [loading, setLoading] = useState(true);
+  const [formattedDate, setFormattedDate] = useState<string>(''); // Estado para armazenar a data formatada
   const estacao = 'https://i.postimg.cc/zX9nQ80Q/Esta-o-siba-250-x-150-mm-250-x-100-mm.png';
   const route = useRoute<DetalhesRelatorioRouteProp>();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
@@ -31,6 +32,7 @@ const DetalhesRelatorio = () => {
       .then((response) => {
         console.log('Detalhes do relatorio:', response.data);
         setRelatorioDTO(response.data);
+        formatarData(response.data.data); // Chama a função para formatar a data
       })
       .catch((error) => {
         console.error('Erro ao buscar detalhes do relatorio:', error);
@@ -38,6 +40,13 @@ const DetalhesRelatorio = () => {
       .finally(() => {
         setLoading(false);
       });
+  };
+
+  const formatarData = (data: string | undefined) => {
+    if (data) {
+      const dataFormatada = new Date(data).toLocaleDateString('pt-BR');
+      setFormattedDate(dataFormatada);
+    }
   };
 
   useEffect(() => {
@@ -66,8 +75,8 @@ const DetalhesRelatorio = () => {
       </TouchableOpacity>
       <Text style={styles.title}>Relatório</Text>
       <View style={styles.projetoContainer}>
-        <View  style={styles.cabeçalho}> 
-          <Text style={styles.label}>Data: {new Date(relatorioDTO.data).toLocaleDateString()}</Text>
+        <View style={styles.cabeçalho}>
+          <Text style={styles.label}>Data: {formattedDate}</Text>
           <Text style={styles.label}>Curso: {relatorioDTO.projetosRelatorio.nome}</Text>
           <Text style={styles.label}>Professor: {relatorioDTO.projetosRelatorio.lider}</Text>
         </View>
@@ -75,7 +84,7 @@ const DetalhesRelatorio = () => {
         <Text style={styles.resposta}>{relatorioDTO['A aula ocorreu normalmente?']}</Text>
         <Text style={styles.pergunta}>
           Algum(a) aluno(a) apresentou problemas de comportamento, aprendizagem, assistência social
-          ou espiritual? Qual?'{' '}
+          ou espiritual? Qual?{' '}
         </Text>
         <Text style={styles.resposta}>
           {
@@ -109,42 +118,42 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#0b1f34',
   },
-  cabeçalho:{
-
-marginBottom:30
+  cabeçalho: {
+    marginBottom: 30,
   },
   image: {
     width: '50%',
     height: 70,
     resizeMode: 'contain',
     marginBottom: 16,
-    justifyContent:'center',
-    alignItems:'center',
-    alignSelf:'center'
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 16,
-    color:'white'
+    color: 'white',
   },
   label: {
     fontSize: 16,
     marginBottom: 8,
+   
   },
   pergunta: {
     fontSize: 16,
     marginBottom: 8,
     fontWeight: 'bold',
-    backgroundColor:'#0b1f34',
-    padding:10,
-    color:'white'
-  
+    backgroundColor: '#0b1f34',
+    padding: 10,
+    color: 'white',
   },
   resposta: {
     fontSize: 16,
     marginBottom: 8,
-    paddingBottom:20
+    paddingBottom: 20,
+    color: 'white',
   },
   voltar: {
     fontSize: 16,
@@ -165,7 +174,7 @@ marginBottom:30
     borderColor: '#ddd',
     borderRadius: 8,
     backgroundColor: '#f9f9f9',
-    marginBottom:20
+    marginBottom: 20,
   },
   errorContainer: {
     flex: 1,

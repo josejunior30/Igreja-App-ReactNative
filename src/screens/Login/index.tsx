@@ -1,5 +1,6 @@
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { AxiosError } from 'axios';
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native';
 import * as Animatable from 'react-native-animatable';
@@ -20,13 +21,30 @@ export default function LoginScreen() {
       saveAccessToken(token.access_token);
       setIsAuthenticated(true);
       setErrorMessage(null);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error:', error);
-      setErrorMessage('Credenciais inválidas. Verifique seu e-mail e senha');
-      Alert.alert('Erro de Login', 'Credenciais inválidas. Verifique seu e-mail e senha.');
+  
+      // Verifica se o erro é uma instância de AxiosError
+      if (error instanceof AxiosError) {
+        if (error.response) {
+          if (error.response.status === 401) {
+            setErrorMessage('Credenciais inválidas. Verifique seu e-mail e senha');
+            Alert.alert('Erro de Login', 'Credenciais inválidas. Verifique seu e-mail e senha.');
+          } else {
+            setErrorMessage('Erro ao tentar fazer login. Tente novamente mais tarde.');
+            Alert.alert('Erro de Login', 'Erro ao tentar fazer login. Tente novamente mais tarde.');
+          }
+        } else {
+          setErrorMessage('Erro ao tentar fazer login. Verifique sua conexão.');
+          Alert.alert('Erro de Login', 'Erro ao tentar fazer login. Verifique sua conexão.');
+        }
+      } else {
+        // Tratamento genérico para outros tipos de erro
+        setErrorMessage('Ocorreu um erro inesperado. Tente novamente mais tarde.');
+        Alert.alert('Erro de Login', 'Ocorreu um erro inesperado. Tente novamente mais tarde.');
+      }
     }
   };
-
   const toggleShowPassword = () => {
     setShowPassword(!showPassword);
   };

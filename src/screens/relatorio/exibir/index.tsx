@@ -91,6 +91,8 @@ const Relatorio = () => {
     const year = date.getFullYear();
     return `${day}-${month}-${year}`;
   };
+  
+
   return (
     <ScrollView style={styles.container}>
       <TouchableOpacity style={styles.containerVoltar} onPress={() => navigation.goBack()}>
