@@ -7,9 +7,10 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  ScrollView,
+
 } from 'react-native';
 import { Card } from 'react-native-paper';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const MenuSecretaria = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
@@ -31,10 +32,10 @@ const MenuSecretaria = () => {
       </TouchableOpacity>
       <TouchableOpacity
         onPress={() => navigation.navigate('Alunos')}
-        onPressIn={() => handlePressIn('PresençaExibir')}
+        onPressIn={() => handlePressIn('Alunos')}
         onPressOut={handlePressOut}
       >
-        <Card style={[styles.card, activeCard === 'PresençaExibir' && styles.activeCard]}>
+        <Card style={[styles.card, activeCard === 'Alunos' && styles.activeCard]}>
           <Text style={styles.textLink}>
             <FontAwesome6 name="users" size={30} color="#ed7947" /> Alunos
           </Text>
@@ -73,17 +74,6 @@ const MenuSecretaria = () => {
           </Text>
         </Card>
       </TouchableOpacity>
-      <TouchableOpacity
-        onPress={() => navigation.navigate('PresençaExibir')}
-        onPressIn={() => handlePressIn('Avisos')}
-        onPressOut={handlePressOut}
-      >
-        <Card style={[styles.card, activeCard === 'Avisos' && styles.activeCard]}>
-          <Text style={styles.textLink}>
-            <Ionicons name="notifications" size={30} color="#ed7947" /> Avisos
-          </Text>
-        </Card>
-      </TouchableOpacity>
     </ScrollView>
   );
 };
@@ -93,6 +83,7 @@ const styles = StyleSheet.create({
     flexGrow: 1, 
     paddingTop: 30,
     backgroundColor: '#0b1f34',
+   paddingBottom:20
   },
   containerVoltar: {
     flexDirection: 'row',

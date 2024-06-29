@@ -1,6 +1,5 @@
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import navigation from 'navigation';
 import { RootStackParamList } from 'navigation/navigationTypes';
 import { useEffect, useState } from 'react';
 import {
@@ -11,6 +10,8 @@ import {
   StyleSheet,
   TouchableOpacity,
   Linking,
+  ActivityIndicator,
+  RefreshControl,
 } from 'react-native';
 import { Button } from 'react-native-paper';
 
@@ -20,43 +21,65 @@ import * as alunosService from '~/service/alunosService';
 const Alunos = () => {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [alunosDTO, setAlunosDTO] = useState<alunoDTO[]>([]);
-  const [alunos, setAlunos] = useState<alunoDTO[]>([]);
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchAlunos = async () => {
+    setLoading(true);
+    try {
+      const response = await alunosService.findAll();
+      setAlunosDTO(response.data);
+    } catch (error) {
+      console.error('Erro ao buscar dados:', error);
+      // Trate o estado de erro (por exemplo, exiba uma mensagem de erro)
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    alunosService
-      .findAll()
-      .then((response) => {
-        setAlunosDTO(response.data);
-      })
-      .catch((error) => {
-        console.error('Erro ao buscar dados:', error);
-        // Trate o estado de erro (por exemplo, exiba uma mensagem de erro)
-      });
+    fetchAlunos();
   }, []);
+
   const handleSearch = async () => {
+    setLoading(true);
     try {
       const response = await alunosService.findByNome(searchTerm);
       setAlunosDTO(response.data);
     } catch (error) {
       console.error('Erro ao buscar dados:', error);
       // Trate o estado de erro (por exemplo, exiba uma mensagem de erro)
+    } finally {
+      setLoading(false);
     }
   };
+
   const handleWhatsApp = (telefone: string) => {
-    // Remova caracteres não numéricos do telefone
     const telefoneLimpo = telefone.replace(/\D/g, '');
-    // Adicione o código do país (Brasil: +55) ao número de telefone
     const telefoneComCodigoPais = `+55${telefoneLimpo}`;
     Linking.openURL(`whatsapp://send?phone=${telefoneComCodigoPais}`);
   };
 
-  if (!alunosDTO) {
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchAlunos();
+    setRefreshing(false);
+  };
+
+  if (loading) {
+    return <ActivityIndicator size="large" color="#00D4FF" />;
+  }
+
+  if (!alunosDTO.length) {
     return <Text>Curso não encontrado</Text>;
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+    >
       <TouchableOpacity style={styles.containerVoltar} onPress={() => navigation.goBack()}>
         <Ionicons name="arrow-back-circle" size={30} color="white" />
         <Text style={styles.voltar}>Voltar</Text>
@@ -85,10 +108,10 @@ const Alunos = () => {
           <View key={aluno.id} style={styles.alunoContainer}>
             <Text style={styles.alunoIndex}>{index + 1}.</Text>
             <TouchableOpacity
-              onPress={() => navigation.navigate('DetalhesAlunos', { id: aluno.id })}>
+              onPress={() => navigation.navigate('DetalhesAlunos', { id: aluno.id })}
+            >
               <Text style={styles.alunoNome}>{aluno.nome}</Text>
             </TouchableOpacity>
-
             <View style={styles.alunoTelefoneContainer}>
               <TouchableOpacity onPress={() => handleWhatsApp(aluno.telefone)}>
                 <Text style={styles.alunoTelefone}>
@@ -106,7 +129,6 @@ const Alunos = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-
     backgroundColor: '#0b1f34',
   },
   table: {

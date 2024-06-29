@@ -1,4 +1,5 @@
 import { FontAwesome } from '@expo/vector-icons';
+import * as Updates from 'expo-updates'; 
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { NativeStackHeaderProps } from '@react-navigation/native-stack';
 import { RootStackParamList, AuthStackParamList } from 'navigation/navigationTypes';
@@ -46,7 +47,7 @@ const Header: React.FC<NativeStackHeaderProps> = (props) => {
   const handleLogout = async () => {
     try {
       await logout();
-      navigation.navigate('LoginScreen');
+      await Updates.reloadAsync();
     } catch (error) {
       console.error('Erro durante o logout:', error);
     }

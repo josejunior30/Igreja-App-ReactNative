@@ -31,7 +31,7 @@ const AddAlunos = () => {
     id: 0,
     nome: '',
     dataNascimento: new Date(),
-    telefone: '',
+    telefone: '21',  // Inicialize com o código de área
     rg: '',
     cpfResponsavel: '',
     responsavel: '',
@@ -107,7 +107,7 @@ const AddAlunos = () => {
         id: 0,
         nome: '',
         dataNascimento: new Date(),
-        telefone: '',
+        telefone: '21', // Reset para o código de área "21"
         rg: '',
         cpfResponsavel: '',
         responsavel: '',
@@ -141,6 +141,10 @@ const AddAlunos = () => {
 
   return (
     <ScrollView style={styles.container}>
+      <TouchableOpacity style={styles.containerVoltar} onPress={() => navigation.goBack()}>
+        <Ionicons name="arrow-back-circle" size={30} color="white" />
+        <Text style={styles.voltar}>Voltar</Text>
+      </TouchableOpacity>
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Nome</Text>
         <TextInput
@@ -160,7 +164,9 @@ const AddAlunos = () => {
             editable={false}
           />
 
-          <Button onPress={() => setShowDatePicker(true)}> Inserir Data</Button>
+          <Button style={styles.btnData} onPress={() => setShowDatePicker(true)}>
+            <Text style={styles.textData}>Inserir Data</Text>
+          </Button>
         </View>
         {showDatePicker && (
           <DateTimePicker
@@ -177,7 +183,7 @@ const AddAlunos = () => {
           style={styles.input}
           value={aluno.telefone}
           placeholder="Digite o telefone"
-          onChangeText={(text) => handleChange('telefone', text)}
+          onChangeText={(text) => handleChange('telefone', '21' + text.replace('21', ''))}
         />
       </View>
 
@@ -236,11 +242,12 @@ const AddAlunos = () => {
           onChangeText={(text) => handleChange('pergunta', text)}
         />
       </View>
-
+      <Text style={styles.label}>Escolha o Curso</Text>
       <Picker
         selectedValue={aluno.projetos.id}
         style={styles.input}
         onValueChange={(itemValue) => handleChange('projetos', itemValue as unknown as string)}>
+        <Picker.Item label="Selecione..." />
         {projetos.map((projeto) => (
           <Picker.Item key={projeto.id} label={projeto.nome} value={projeto.id} />
         ))}
@@ -301,14 +308,10 @@ const AddAlunos = () => {
         />
       </View>
       <View style={styles.buttonContainer}>
-        <Button onPress={handleSubmit}>
-          <Text>Adicionar</Text>
+        <Button style={styles.btnInserir} onPress={handleSubmit}>
+          <Text style={styles.textInserir}>Adicionar</Text>
         </Button>
       </View>
-      <TouchableOpacity style={styles.containerVoltar} onPress={() => navigation.goBack()}>
-        <Ionicons name="arrow-back-circle" size={30} color="white" />
-        <Text style={styles.voltar}>Voltar</Text>
-      </TouchableOpacity>
     </ScrollView>
   );
 };
@@ -316,10 +319,25 @@ const AddAlunos = () => {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-    backgroundColor:'#0b1f34'
+    backgroundColor: '#0b1f34',
   },
   inputContainer: {
     marginBottom: 15,
+  },
+  btnData: {
+    backgroundColor: '#ed7947',
+  },
+  textData: {
+    color: 'white',
+  },
+  btnInserir: {
+    backgroundColor: '#ed7947',
+    marginBottom: 20,
+    width: 200,
+    alignSelf: 'center',
+  },
+  textInserir: {
+    color: 'white',
   },
   containerProjeto: {
     marginBottom: 15,
@@ -327,22 +345,23 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     marginBottom: 5,
-    color:'white'
+    color: 'white',
   },
   input: {
     height: 40,
     borderColor: 'gray',
     borderWidth: 1,
     padding: 10,
-    backgroundColor:'white'
+    backgroundColor: 'white',
+    marginBottom: 20,
   },
   inputData: {
     height: 40,
-    width:250,
+    width: 250,
     borderColor: 'gray',
     borderWidth: 1,
     padding: 10,
-    backgroundColor:'white'
+    backgroundColor: 'white',
   },
   dateContainer: {
     flexDirection: 'row',
@@ -362,7 +381,7 @@ const styles = StyleSheet.create({
   containerVoltar: {
     marginLeft: 30,
     flexDirection: 'row',
-    marginBottom: 10,
+    marginBottom: 30,
     marginTop: 20,
   },
 });

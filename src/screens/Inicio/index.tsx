@@ -18,6 +18,7 @@ export default function Inicio() {
   };
   return (
     <View style={styles.container}>
+      <Text style={styles.label}>Escolha uma seção! </Text>
       <Animatable.View animation="fadeInLeft" delay={500} style={styles.containerCard}>
         <TouchableHighlight onPress={() => handlePress('MenuSecretaria')} underlayColor="#DDDDDD">
           <View>
@@ -27,25 +28,10 @@ export default function Inicio() {
             </Card>
           </View>
         </TouchableHighlight>
-        <TouchableHighlight  underlayColor="#DDDDDD">
-          <View>
-            <Card style={styles.calendario} elevation={5}>
-              <MaterialIcons name="calendar-month" style={styles.icone} />
-              <Text style={styles.titulo}>Calendário</Text>
-            </Card>
-          </View>
-        </TouchableHighlight>
       </Animatable.View>
       
       <Animatable.View animation="fadeInRight" delay={600} style={styles.containerCard}>
-        <TouchableHighlight  underlayColor="#DDDDDD" onPress={() => handlePress('NotificationScreen')}>
-          <View>
-            <Card style={styles.avisos} elevation={5}>
-              <Ionicons name="notifications" style={styles.icone} />
-              <Text style={styles.titulo}>Avisos</Text>
-            </Card>
-          </View>
-        </TouchableHighlight>
+      
         <TouchableHighlight onPress={() => handlePress('Cursos')} underlayColor="#DDDDDD">
           <View>
             <Card style={styles.cursos} elevation={5}>
@@ -65,11 +51,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#0b1f34'
   },
   containerCard: {
-    marginTop: 80,
+    marginTop: 60,
   
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
+  },
+  label:{
+textAlign:'center',
+color:'white', 
+marginTop:30,
+fontSize: 20
   },
   icone: {
     fontSize: 40,
@@ -84,37 +76,26 @@ const styles = StyleSheet.create({
     height: 140,
     borderRadius: 20,
     marginRight: 10,
+    width:180,
+   
   },
-  calendario: {
-    borderStyle: 'solid',
-    backgroundColor: 'white',
-    paddingHorizontal: 28,
-    paddingVertical: 30,
-    borderRadius: 20,
-    marginLeft: 10,
-    height: 140,
-  },
+
   cursos: {
+    
+    width:180,
     borderStyle: 'solid',
     backgroundColor: 'white',
     paddingVertical: 30,
     paddingHorizontal: 45,
-    borderRadius: 20,
-    marginLeft: 10,
-    height: 140,
-  },
-  avisos: {
-    borderStyle: 'solid',
-    backgroundColor: 'white',
-    paddingHorizontal: 45,
-    paddingVertical: 30,
     borderRadius: 20,
     marginRight: 10,
     height: 140,
   },
+
   titulo: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#0b1f34',
+    textAlign:'center'
   },
 });
