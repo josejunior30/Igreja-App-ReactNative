@@ -4,6 +4,11 @@
     "slug": "sibape",
     "version": "1.0.0",
     "projectId": "sibape-123",
+    "extra": {
+      "REACT_APP_BASE_URL":  "http://192.168.1.3:8080",
+      "REACT_APP_CLIENT_ID": "myclientid",
+      "REACT_APP_CLIENT_SECRET": "myclientsecret"
+    },
 
     "web": {
       "favicon": "./assets/favicon.png"

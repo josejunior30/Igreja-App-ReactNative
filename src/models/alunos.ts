@@ -6,7 +6,7 @@ export type alunosDTO = {
   responsavel: string;
   cpfResponsavel: string;
   telefone: string;
-
+  alunoStatus: alunoStatus;
   rua: string;
   cep: string;
   numero: string;
@@ -19,7 +19,10 @@ export type alunosDTO = {
   sangue: string;
   pergunta: string;
 };
-
+export type alunoStatus ={
+  id: number;
+  pendencia: string;
+}
 export type alunoDTO = {
   id: number;
   nome: string;
@@ -29,7 +32,7 @@ export type alunoDTO = {
   responsavel: string;
   cpfResponsavel: string;
   telefone: string;
-  idade:number,
+  idade: number;
   url: string;
   rua: string;
   cep: string;
@@ -38,11 +41,12 @@ export type alunoDTO = {
   cidade: string;
   complemento: string;
   projetos: projetos;
-
+  alunoStatus: alunoStatus;
   AlunoDoenca: number;
   sangue: string;
   pergunta: string;
 };
+
 export type projetos = {
   id: number;
   nome: string;

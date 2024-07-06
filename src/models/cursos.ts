@@ -18,6 +18,7 @@ export type alunos = {
   responsavel: string;
   cpfResponsavel: string;
   telefone: string;
+  AlunoStatus:number,
   chamada: chamada[];
 };
 export type chamada = {

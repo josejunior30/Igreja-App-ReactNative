@@ -1,4 +1,6 @@
-import {jwtDecode} from 'jwt-decode';
+import * as Updates from 'expo-updates'; 
+import { jwtDecode } from 'jwt-decode';
+
 import * as accessTokenRepository from '../localStorage/access-token-repository';
 import { AccessTokenPayloadDTO, RoleEnum } from '../models/auth';
 
@@ -27,7 +29,23 @@ export async function getAccessTokenPayload(): Promise<AccessTokenPayloadDTO | n
     if (!token) {
       return null; // Se o token não existir, retorna null
     }
+    
+    // Decodifica o token JWT para obter o payload
     const decodedToken = jwtDecode<AccessTokenPayloadDTO>(token);
+
+    // Verifica se o token está expirado
+    if (decodedToken.exp * 2000 < Date.now()) {
+      // Remove o token expirado do AsyncStorage
+      accessTokenRepository.remove();
+      console.log('Token expirado. Removido do AsyncStorage.');
+      
+      // Reinicia a aplicação
+      await Updates.reloadAsync();
+      console.log('Aplicação reiniciada após expiração do token.');
+      
+      return null;
+    }
+
     return decodedToken;
   } catch (error) {
     console.error('Erro ao decodificar token:', error);

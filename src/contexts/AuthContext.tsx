@@ -61,7 +61,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         return null; // Retornar null em caso de erro de decodificação
       }
     }
-    return undefined; // Retornar undefined se não houver token
+    return undefined; 
   };
 
   return (

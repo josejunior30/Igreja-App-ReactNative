@@ -42,7 +42,6 @@ const MenuSecretaria = () => {
         </Card>
       </TouchableOpacity>
       <TouchableOpacity
-        onPress={() => navigation.navigate('Relatorio')}
         onPressIn={() => handlePressIn('Relatorio')}
         onPressOut={handlePressOut}
       >

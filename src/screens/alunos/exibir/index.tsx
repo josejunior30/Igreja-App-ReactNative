@@ -15,12 +15,13 @@ import {
 } from 'react-native';
 import { Button } from 'react-native-paper';
 
-import { alunoDTO } from '~/models/alunos';
+import { alunoDTO, alunoStatus } from '~/models/alunos';
 import * as alunosService from '~/service/alunosService';
 
 const Alunos = () => {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [alunosDTO, setAlunosDTO] = useState<alunoDTO[]>([]);
+  const [alunoStatus, setAlunoStatus] = useState<alunoStatus[]>([]);
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -30,6 +31,9 @@ const Alunos = () => {
     try {
       const response = await alunosService.findAll();
       setAlunosDTO(response.data);
+      // Aqui vamos mapear os status dos alunos para um array separado
+      const statusArray = response.data.map((aluno: any) => aluno.alunoStatus);
+      setAlunoStatus(statusArray);
     } catch (error) {
       console.error('Erro ao buscar dados:', error);
       // Trate o estado de erro (por exemplo, exiba uma mensagem de erro)
@@ -47,6 +51,9 @@ const Alunos = () => {
     try {
       const response = await alunosService.findByNome(searchTerm);
       setAlunosDTO(response.data);
+      // Atualize também os status quando realizar a busca por nome
+      const statusArray = response.data.map((aluno: any) => aluno.alunoStatus);
+      setAlunoStatus(statusArray);
     } catch (error) {
       console.error('Erro ao buscar dados:', error);
       // Trate o estado de erro (por exemplo, exiba uma mensagem de erro)
@@ -78,8 +85,7 @@ const Alunos = () => {
   return (
     <ScrollView
       style={styles.container}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-    >
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
       <TouchableOpacity style={styles.containerVoltar} onPress={() => navigation.goBack()}>
         <Ionicons name="arrow-back-circle" size={30} color="white" />
         <Text style={styles.voltar}>Voltar</Text>
@@ -108,9 +114,16 @@ const Alunos = () => {
           <View key={aluno.id} style={styles.alunoContainer}>
             <Text style={styles.alunoIndex}>{index + 1}.</Text>
             <TouchableOpacity
-              onPress={() => navigation.navigate('DetalhesAlunos', { id: aluno.id })}
-            >
-              <Text style={styles.alunoNome}>{aluno.nome}</Text>
+              onPress={() => navigation.navigate('DetalhesAlunos', { id: aluno.id })}>
+              <Text style={styles.alunoNome}>
+                {aluno.nome}
+                {alunoStatus.length > 0 && alunoStatus[index] && (
+                  <Text style={styles.status}>
+                    {'    '}
+                    {alunoStatus[index].pendencia}
+                  </Text>
+                )}
+              </Text>
             </TouchableOpacity>
             <View style={styles.alunoTelefoneContainer}>
               <TouchableOpacity onPress={() => handleWhatsApp(aluno.telefone)}>
@@ -134,6 +147,11 @@ const styles = StyleSheet.create({
   table: {
     flex: 1,
     padding: 16,
+  },
+  status: {
+    fontSize: 9,
+
+    color: 'red',
   },
   header: {
     flexDirection: 'row',

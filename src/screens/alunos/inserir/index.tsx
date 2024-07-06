@@ -3,7 +3,6 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import axios from 'axios';
-import { RootStackParamList } from 'navigation/navigationTypes';
 import React, { useEffect, useState } from 'react';
 import {
   ScrollView,
@@ -18,12 +17,16 @@ import {
 import { Button } from 'react-native-paper';
 
 import { BASE_URL } from '~/contexts/system';
-import { alunosDTO } from '~/models/alunos';
+import { alunosDTO} from '~/models/alunos';
 import { cursosDTO } from '~/models/cursos';
 import { insertAluno } from '~/service/alunosService';
 
+import { RootStackParamList } from 'navigation/navigationTypes';
+import { alunoStatusDTO } from '~/models/alunoStatus';
+
 const AddAlunos = () => {
   const [projetos, setProjetos] = useState<cursosDTO[]>([]);
+  const [alunoStatus, setAlunoStatus] = useState<alunoStatusDTO[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
@@ -31,7 +34,7 @@ const AddAlunos = () => {
     id: 0,
     nome: '',
     dataNascimento: new Date(),
-    telefone: '21',  // Inicialize com o código de área
+    telefone: '21', 
     rg: '',
     cpfResponsavel: '',
     responsavel: '',
@@ -45,6 +48,10 @@ const AddAlunos = () => {
     numero: '',
     cidade: '',
     complemento: '',
+    alunoStatus: {
+      id: 0,
+      pendencia: '',
+    },
     projetos: {
       id: 0,
       nome: '',
@@ -65,6 +72,19 @@ const AddAlunos = () => {
 
     fetchGrupos();
   }, []);
+  
+  useEffect(() => {
+    const fetchAlunoStatus = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL}/status`);
+        setAlunoStatus(response.data);
+      } catch (error) {
+        console.error('Erro ao obter status dos alunos:', error);
+      }
+    };
+
+    fetchAlunoStatus();
+  }, []);
 
   const handleChange = (name: string, value: string | number | Date) => {
     if (name === 'projetos') {
@@ -74,6 +94,16 @@ const AddAlunos = () => {
         projetos: {
           ...prevAluno.projetos,
           id: projetoId,
+        },
+      }));
+    } else if (name === 'alunoStatus') {
+      const statusId = parseInt(value as string, 10);
+      setAluno((prevAluno) => ({
+        ...prevAluno,
+        alunoStatus: {
+          ...prevAluno.alunoStatus,
+          id: statusId,
+        
         },
       }));
     } else if (name === 'dataNascimento') {
@@ -99,7 +129,7 @@ const AddAlunos = () => {
 
   const handleSubmit = async () => {
     try {
-      console.log('Membro Detail antes do POST:', aluno);
+      console.log('Aluno antes do POST:', aluno);
       await insertAluno(aluno);
       setIsModalVisible(true);
       Alert.alert('Sucesso', 'Aluno adicionado com sucesso!');
@@ -121,6 +151,10 @@ const AddAlunos = () => {
         numero: '',
         cidade: '',
         complemento: '',
+        alunoStatus: {
+          id: 0,
+          pendencia: '',
+        },
         projetos: {
           id: 0,
           nome: '',
@@ -247,9 +281,20 @@ const AddAlunos = () => {
         selectedValue={aluno.projetos.id}
         style={styles.input}
         onValueChange={(itemValue) => handleChange('projetos', itemValue as unknown as string)}>
-        <Picker.Item label="Selecione..." />
+        <Picker.Item label="Selecione..." value={0} />
         {projetos.map((projeto) => (
           <Picker.Item key={projeto.id} label={projeto.nome} value={projeto.id} />
+        ))}
+      </Picker>
+
+      <Text style={styles.label}>Status do Aluno</Text>
+      <Picker
+        selectedValue={aluno.alunoStatus.id}
+        style={styles.input}
+        onValueChange={(itemValue) => handleChange('alunoStatus', itemValue as unknown as string)}>
+        <Picker.Item label="Selecione..." value={0} />
+        {alunoStatus.map((status) => (
+          <Picker.Item key={status.id} label={status.pendencia} value={status.id} />
         ))}
       </Picker>
 
@@ -307,11 +352,10 @@ const AddAlunos = () => {
           onChangeText={(text) => handleChange('complemento', text)}
         />
       </View>
-      <View style={styles.buttonContainer}>
-        <Button style={styles.btnInserir} onPress={handleSubmit}>
-          <Text style={styles.textInserir}>Adicionar</Text>
-        </Button>
-      </View>
+
+      <Button style={styles.btnInserir} onPress={handleSubmit}>
+        <Text style={styles.textInserir}>Adicionar</Text>
+      </Button>
     </ScrollView>
   );
 };
@@ -320,6 +364,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 20,
     backgroundColor: '#0b1f34',
+    paddingBottom:30
   },
   inputContainer: {
     marginBottom: 15,
@@ -332,7 +377,7 @@ const styles = StyleSheet.create({
   },
   btnInserir: {
     backgroundColor: '#ed7947',
-    marginBottom: 20,
+    marginBottom: 90,
     width: 200,
     alignSelf: 'center',
   },
